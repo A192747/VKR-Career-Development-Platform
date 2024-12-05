@@ -4,8 +4,6 @@ services:
   postgres:
     image: postgres:15.6
     container_name: postgres_db
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: keycloak
       POSTGRES_USER: keycloak
