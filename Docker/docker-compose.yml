@@ -35,5 +35,16 @@ services:
     ports:
       - 8180:8080
 
+  nginx:
+    image: nginx:alpine
+    restart: always
+    depends_on:
+      - postgres
+      - keycloak_web
+    volumes:
+      - ./cfg/nginx/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - 80:80
+
 volumes:
   postgres_data:
