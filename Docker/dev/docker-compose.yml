@@ -34,27 +34,15 @@ services:
       - --import-realm
     depends_on:
       - postgres
-    # ports:
-    #   - 8180:8080
-
-  nginx:
-    image: nginx:1.27.3-alpine
-    restart: always
-    depends_on:
-      - postgres
-      - keycloak_web
-      - main-app
-    volumes:
-      - ./cfg/nginx/nginx.conf:/etc/nginx/nginx.conf
     ports:
-      - 80:80
+      - 8180:8080
   
   zoo1:
     image: confluentinc/cp-zookeeper:7.3.2
     hostname: zoo1
     container_name: zoo1
-    # ports:
-    #   - "2181:2181"
+    ports:
+      - "2181:2181"
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_SERVER_ID: 1
@@ -64,10 +52,10 @@ services:
     image: confluentinc/cp-kafka:7.3.2
     hostname: kafka1
     container_name: kafka1
-    # ports:
-    #   - "9092:9092"
-    #   - "29092:29092"
-    #   - "9999:9999"
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+      - "9999:9999"
     environment:
       KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka1:19092,EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9092,DOCKER://host.docker.internal:29092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,DOCKER:PLAINTEXT
@@ -94,21 +82,8 @@ services:
       POSTGRES_PASSWORD: backend_password
     volumes:
       - backend_postgres_data:/var/lib/postgresql/data
-    # ports:
-    #   - "5432:5432"
-
-  main-app:
-    build:
-      context: ../Backend/Main-Service
-      dockerfile: Dockerfile
-    container_name: main-app
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://backend_postgres:5432/backend_db
-      SPRING_DATASOURCE_USERNAME: backend_user
-      SPRING_DATASOURCE_PASSWORD: backend_password
-    depends_on:
-      - backend_postgres
-      - keycloak_web
+    ports:
+      - "5432:5432"
 
 volumes:
   postgres_data:

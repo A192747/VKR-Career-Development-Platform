@@ -17,9 +17,9 @@ spring:
     default-schema: public
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/backend_db
-    username: backend_user
-    password: backend_password
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/backend_db}
+    username: ${SPRING_DATASOURCE_USERNAME:backend_user}
+    password: ${SPRING_DATASOURCE_PASSWORD:backend_password}
 
   jpa:
     hibernate:
