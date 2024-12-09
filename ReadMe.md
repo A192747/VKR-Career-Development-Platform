@@ -6,4 +6,4 @@
 http://localhost:8081/api/v1/swagger-ui/index.html#/
 
 ### Архитектура проекта
-![Screenshot](https://github.com/A192747/VKR-Career-Development-Platform/tree/develop/Info/images/arcitecture.jpg)
+![Screenshot](https://github.com/A192747/VKR-Career-Development-Platform/blob/develop/Info/images/architecture.jpg)
