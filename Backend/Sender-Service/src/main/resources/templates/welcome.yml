@@ -1,0 +1,2 @@
+subject: "Welcome to our service"
+body: "Hello {{name}},\nWelcome to our platform!"

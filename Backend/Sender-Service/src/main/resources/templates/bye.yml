@@ -1,0 +1,2 @@
+subject: "Goodbye!"
+body: "Dear {{name}},\nWe're sorry to see you go."
