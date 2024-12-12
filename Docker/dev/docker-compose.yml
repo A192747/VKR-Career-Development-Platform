@@ -13,7 +13,10 @@ services:
     image: quay.io/keycloak/keycloak:23.0.7
     container_name: keycloak_web
     volumes:
-      - ./cfg/keycloak/realm-export.json:/opt/keycloak/data/import/realm.json
+      - type: bind
+        source: ../cfg/keycloak/realm-export-dev.json
+        target: /opt/keycloak/data/import/realm-export.json
+        read_only: true
     environment:
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak

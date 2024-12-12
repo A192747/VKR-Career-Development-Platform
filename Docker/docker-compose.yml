@@ -13,7 +13,10 @@ services:
     image: quay.io/keycloak/keycloak:23.0.7
     container_name: keycloak_web
     volumes:
-      - ./cfg/keycloak/realm-export.json:/opt/keycloak/data/import/realm.json
+      - type: bind
+        source: ./cfg/keycloak/realm-export-preprod.json
+        target: /opt/keycloak/data/import/realm-export.json
+        read_only: true
     environment:
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
@@ -106,6 +109,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://backend_postgres:5432/backend_db
       SPRING_DATASOURCE_USERNAME: backend_user
       SPRING_DATASOURCE_PASSWORD: backend_password
+      OAUTH2_URL: http://keycloak_web:8080/realms/my_realm
     depends_on:
       - backend_postgres
       - keycloak_web
@@ -121,7 +125,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: backend_password
     depends_on:
       - backend_postgres
-      - keycloak_web
+      - kafka1
 
 volumes:
   postgres_data:
