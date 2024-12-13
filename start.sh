@@ -21,8 +21,14 @@ else
     if [[ "$1" == "-down-all" ]]; then
         echo "Done"
     else
-	docker rmi docker-sender-app
-	docker rmi docker-main-app
+        if [[ ! -f "./Backend/Sender-Service/src/main/resources/mail.properties" ]]; then
+            echo
+            echo "[ERROR] File mail.properties not found. Create it form file mail.properties.origin."
+            echo "Exiting..."
+            exit 1
+        fi
+        docker rmi docker-sender-app
+        docker rmi docker-main-app
         echo "Starting docker-compose for full project..."
         cd Docker || exit
         docker-compose up -d
