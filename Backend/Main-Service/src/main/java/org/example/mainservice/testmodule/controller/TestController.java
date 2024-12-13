@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -20,6 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/test")
 @Tag(name = "Test name", description = "Test description")
 public class TestController {
+    private static final Log log = LogFactory.getLog(TestController.class);
+
     @Operation(summary = "Get test page",
             description = "Creates a new attribute. Note that a DocumentType must be created before creating an Attribute.")
     @ApiResponses(value = {
@@ -33,18 +37,24 @@ public class TestController {
 
     @GetMapping("/anonymous")
     public String getAnonymousInfo() {
+        log.info("anonym");
+        System.out.println("anonym");
         return "Anonymous";
     }
 
     @GetMapping("/user")
     @PreAuthorize("hasRole('USER')")
     public String getUserInfo() {
+        log.info("user");
+        System.out.println("user");
         return "user info";
     }
 
     @GetMapping("/admin")
     @PreAuthorize("hasRole('ADMIN')")
     public String getAdminInfo() {
+        log.info("admin");
+        System.out.println("admin");
         return "admin info";
     }
 

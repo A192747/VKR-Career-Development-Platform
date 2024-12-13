@@ -21,6 +21,8 @@ else
     if [[ "$1" == "-down-all" ]]; then
         echo "Done"
     else
+	docker rmi docker-sender-app
+	docker rmi docker-main-app
         echo "Starting docker-compose for full project..."
         cd Docker || exit
         docker-compose up -d

@@ -33,8 +33,8 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${OAUTH2_URL:http://localhost:8180/realms/my_realm}
-          jwk-set-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/certs
+          issuer-uri: ${ISSUER_URL:http://localhost:8180/realms/my_realm}
+          jwk-set-uri: ${JWK_SET_URL:${spring.security.oauth2.resourceserver.jwt.issuer-uri}}/protocol/openid-connect/certs
 
 
 logging:
@@ -42,6 +42,8 @@ logging:
     org:
       hibernate:
         SQL: ${startup.mode}
+      springframework:
+        security: DEBUG
 
 
 
