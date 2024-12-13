@@ -14,7 +14,7 @@
 ```
 
 ### Документация к api находится по адресу: </br>
-http://localhost:80/api/v1/swagger-ui/index.html
+http://localhost:80/swagger-ui/index.html
 
 ### Архитектура проекта
 ![Screenshot](https://github.com/A192747/VKR-Career-Development-Platform/blob/develop/Info/images/architecture.jpg)
