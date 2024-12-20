@@ -5,6 +5,7 @@ import lombok.Getter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.example.senderservice.model.EmailTemplate;
+import org.example.senderservice.model.TemplateType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
@@ -21,12 +22,13 @@ public class EmailTemplateConfig {
 
     private static final Log log = LogFactory.getLog(EmailTemplateConfig.class);
     @Getter
-    private Map<String, EmailTemplate> templates = new HashMap<>();
+    private Map<TemplateType, EmailTemplate> templates = new HashMap<>();
 
     @PostConstruct
     public void init() {
         try {
             templates = loadTemplates();
+            System.out.println(templates);
             log.info("Loaded " + templates.size() + " templates.");
         } catch (IOException e) {
             log.error("Error loading email templates", e);
@@ -36,8 +38,8 @@ public class EmailTemplateConfig {
     @Value("${email-templates.path:classpath:/templates/*.yml}")
     private String templatesPath;
 
-    public Map<String, EmailTemplate> loadTemplates() throws IOException {
-        Map<String, EmailTemplate> templates = new HashMap<>();
+    public Map<TemplateType, EmailTemplate> loadTemplates() throws IOException {
+        Map<TemplateType, EmailTemplate> templates = new HashMap<>();
         PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
         Resource[] resources = resolver.getResources(templatesPath);
 
@@ -48,7 +50,8 @@ public class EmailTemplateConfig {
             if (fileName != null && fileName.endsWith(".yml")) {
                 // Преобразование YAML в объект EmailTemplate
                 EmailTemplate template = loadTemplateFromYaml(resource);
-                templates.put(fileName, template);
+                String name = fileName.substring(0, fileName.lastIndexOf("."));
+                templates.put(TemplateType.valueOf(name.toUpperCase()), template);
             }
         }
 

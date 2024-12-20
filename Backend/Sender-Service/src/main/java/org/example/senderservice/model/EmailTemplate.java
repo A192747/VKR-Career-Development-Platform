@@ -19,4 +19,12 @@ public class EmailTemplate {
     public void setBody(String body) {
         this.body = body;
     }
+
+    @Override
+    public String toString() {
+        return "EmailTemplate{" +
+                "subject='" + subject + '\'' +
+                ", body='" + body + '\'' +
+                '}';
+    }
 }
