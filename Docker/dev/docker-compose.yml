@@ -88,6 +88,22 @@ services:
     ports:
       - "5432:5432"
 
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    runtime: nvidia  # Использование GPU
+    pull_policy: always
+    ports:
+      - "11434:11434"  # Подключаем порты
+    volumes:
+      - ../cfg/ollama:/model_files  # Монтируем локальную директорию для моделей
+    tty: true  # Ожидаем работу в терминале
+    entrypoint: ["/bin/sh", "/model_files/run_model.sh"]  # Настроенный кастомный entrypoint
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all  # Убедитесь, что все GPU видны для контейнера
+    restart: always  # Перезапуск контейнера в случае сбоя
+
 volumes:
   postgres_data:
   backend_postgres_data:
+  ollama: 
