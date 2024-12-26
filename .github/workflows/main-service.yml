@@ -14,7 +14,9 @@ jobs:
       uses: actions/setup-java@v3
       with:
         java-version: '17'
-        distribution: 'adoptopenjdk'
+        distribution: 'temurin' 
+        java-package: jdk
+        check-latest: false'
 
     - name: Cache Maven dependencies
       uses: actions/cache@v3
