@@ -62,6 +62,7 @@ else
                 echo "Removing container ollama..."
                 docker stop ollama
                 docker rm ollama
+                docker rmi ollama/ollama
             fi
             echo "Done"
         else
@@ -73,7 +74,7 @@ else
             fi
             
             # Проверяем, существует ли контейнер
-    container_id=$(docker ps -a -q -f name=$container_name)
+            container_id=$(docker ps -a -q -f name=$container_name)
 
             if [[ -n "$container_id" ]]; then
                 # Если контейнер существует, проверяем его статус
@@ -81,12 +82,14 @@ else
                 
                 if [[ "$container_status" == "running" ]]; then
                     echo "Container '$container_name' is already running."
-                elif [[ "$container_status" == "exited" ]]; then
-                    # Если контейнер существует, но остановлен, перезапускаем его
-                    echo "Container '$container_name' is stopped. Restarting it..."
-                    docker start $container_name
                 else
-                    echo "Container '$container_name' is in an unknown state."
+                    if [[ "$container_status" == "exited" ]]; then
+                        # Если контейнер существует, но остановлен, перезапускаем его
+                        echo "Container '$container_name' is stopped. Restarting it..."
+                        docker start $container_name
+                    else
+                        echo "Container '$container_name' is in an unknown state."
+                    fi
                 fi
             else
                 # Если контейнер не существует, запускаем его
