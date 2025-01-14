@@ -1,13 +1,23 @@
 #!/bin/bash
 
+# Определяем операционную систему
+OS_TYPE=$(uname -a)
+
+# Устанавливаем команду для docker-compose в зависимости от ОС
+if [[ "$OS_TYPE" == *"Linux"* ]]; then
+    DOCKER_COMPOSE_CMD="docker compose"
+else
+    DOCKER_COMPOSE_CMD="docker-compose"
+fi
+
 CURRENT_DIR=${PWD}
 
 # Останавливаем все docker-compose
 echo "Stopping docker-compose from all dirs..."
 cd Docker || exit
-docker-compose down
+$DOCKER_COMPOSE_CMD down
 cd dev || exit
-docker-compose down
+$DOCKER_COMPOSE_CMD down
 
 cd "$CURRENT_DIR" || exit
 
@@ -49,7 +59,7 @@ if [[ "$1" == "-dev" ]]; then
     fi
     cd Docker || exit
     cd dev || exit
-    docker-compose up -d
+    $DOCKER_COMPOSE_CMD up -d
 else
     if [[ "$1" == "-down" ]]; then
         if docker ps -q -f name=ollama; then
@@ -94,7 +104,13 @@ else
             else
                 # Если контейнер не существует, запускаем его
                 echo "Container '$container_name' does not exist. Starting it now..."
-                docker run -d --gpus=all -v ollama:/root/.ollama -p 11434:11434 --name $container_name $image
+                if command -v nvidia-smi &> /dev/null; then
+                	echo "GPU available. Running a container using the GPU."
+                	docker run -d --gpus=all -v ollama:/root/.ollama -p 11434:11434 --name $container_name $image
+                else
+                	echo "GPU not available. Running a container using the CPU."
+			docker run -d -v ollama:/root/.ollama -p 11434:11434 --name $container_name $image
+		fi
                 # Теперь подключаемся к контейнеру и выполняем команду
                 echo "Running the command in the container..."
                 docker exec -d $container_name $command_to_run
@@ -105,7 +121,7 @@ else
             docker rmi docker-main-app
             echo "Starting docker-compose for full project..."
             cd Docker || exit
-            docker-compose up -d
+            $DOCKER_COMPOSE_CMD up -d
         fi
     fi
 fi
