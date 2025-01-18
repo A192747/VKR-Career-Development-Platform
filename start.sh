@@ -66,6 +66,10 @@ else
             echo "Stopping container ollama..."
             docker stop ollama
         fi
+        if docker ps -q -f name=cloudflared; then
+            echo "Stopping container cloudflared..."
+            docker stop cloudflared
+        fi
     else
         if [[ "$1" == "-down-all" ]]; then
             if docker ps -q -f name=ollama; then
@@ -73,6 +77,12 @@ else
                 docker stop ollama
                 docker rm ollama
                 docker rmi ollama/ollama
+            fi
+            if docker ps -q -f name=cloudflared; then
+                echo "Stopping container cloudflared..."
+                docker stop cloudflared
+                docker rm cloudflared
+                docker rmi cloudflared/cloudflared
             fi
             echo "Done"
         else
@@ -124,6 +134,14 @@ else
             $DOCKER_COMPOSE_CMD up -d
         fi
     fi
+fi
+
+# Запускаем cloudflared tunnel, если передан флаг -cloud
+if [[ "$1" == "-cloud" ]]; then
+    echo "Starting Cloudflare Tunnel..."
+    docker run -d --name cloudflared --network host cloudflare/cloudflared tunnel --url http://host.docker.internal:80
+    docker logs cloudflared | grep -oE '[^[:space:]]+\.trycloudflare\.com'
+    echo "Cloudflare Tunnel started."
 fi
 
 cd "$CURRENT_DIR" || exit
