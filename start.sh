@@ -22,33 +22,6 @@ stop_all_docker_compose() {
     cd "$CURRENT_DIR" || exit
 }
 
-# Функция для запуска cloudflared туннеля
-start_cloudflared_tunnel() {
-    container_name="cloudflared"
-    image="cloudflared/cloudflared"
-    
-    # Проверяем, существует ли контейнер
-    container_id=$(docker ps -a -q -f name=$container_name)
-
-    if [[ -n "$container_id" ]]; then
-        # Если контейнер существует, проверяем его статус
-        container_status=$(docker inspect --format '{{.State.Status}}' $container_name)
-        
-        if [[ "$container_status" == "running" ]]; then
-            echo "Container '$container_name' is already running."
-        elif [[ "$container_status" == "exited" ]]; then
-            # Если контейнер существует, но остановлен, перезапускаем его
-            echo "Container '$container_name' is stopped. Restarting it..."
-            docker start $container_name
-        else
-            echo "Container '$container_name' is in an unknown state."
-        fi
-    else
-        echo "Starting Cloudflare Tunnel..."
-        docker run -d --name cloudflared --network host cloudflare/cloudflared tunnel --url http://host.docker.internal:80
-        echo "Cloudflare Tunnel started."
-    fi
-}
 
 # Функция для запуска контейнера ollama
 start_ollama_container() {
@@ -130,9 +103,7 @@ check_main_files() {
 # Функция для остановки и удаления контейнеров
 stop_and_remove_containers() {
     stop_and_remove_ollama
-    stop_and_remove_cloudflared
 }
-
 
 stop_and_remove_ollama() {
     if docker ps -q -f name=ollama; then
@@ -149,36 +120,14 @@ stop_ollama_container() {
     fi
 }
 
-stop_and_remove_cloudflared() {
-    if docker ps -q -f name=cloudflared; then
-        stop_cloudflared_container
-        docker rm cloudflared
-    fi
-}
-
-
-stop_cloudflared_container() {
-     if docker ps -q -f name=cloudflared; then
-        echo "Stopping container cloudflared..."
-        docker stop cloudflared
-    fi
-}
-
 echo_cloudflared_url() {
     sleep 5
     docker logs cloudflare-tunnel
 }
 
 
-
 # Обработка аргументов
 case "$1" in
-    "-cloud")
-        stop_all_docker_compose
-	start_ollama_container
-        start_full_project
-        echo_cloudflared_url
-        ;;
     "-dev")
         stop_all_docker_compose
         start_ollama_container
@@ -196,6 +145,7 @@ case "$1" in
         stop_all_docker_compose
         start_ollama_container
         start_full_project
+	echo_cloudflared_url
         ;;
 esac
 

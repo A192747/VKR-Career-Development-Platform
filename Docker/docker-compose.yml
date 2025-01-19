@@ -114,6 +114,7 @@ services:
     depends_on:
       - backend_postgres
       - keycloak_web
+      - cloudflared
 
   sender-app:
     build:
