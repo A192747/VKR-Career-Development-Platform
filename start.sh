@@ -22,11 +22,41 @@ $DOCKER_COMPOSE_CMD down
 cd "$CURRENT_DIR" || exit
 
 
+# Запускаем cloudflared tunnel, если передан флаг -cloud
+if [[ "$1" == "-cloud" ]]; then
+
+    container_name="cloudflared"
+    image="cloudflared/cloudflared"
+    # Проверяем, существует ли контейнер
+    container_id=$(docker ps -a -q -f name=$container_name)
+
+    if [[ -n "$container_id" ]]; then
+        # Если контейнер существует, проверяем его статус
+        container_status=$(docker inspect --format '{{.State.Status}}' $container_name)
+        
+        if [[ "$container_status" == "running" ]]; then
+            echo "Container '$container_name' is already running."
+        elif [[ "$container_status" == "exited" ]]; then
+            # Если контейнер существует, но остановлен, перезапускаем его
+            echo "Container '$container_name' is stopped. Restarting it..."
+            docker start $container_name
+        else
+            echo "Container '$container_name' is in an unknown state."
+        fi
+    else
+        echo "Starting Cloudflare Tunnel..."
+        docker run -d --name cloudflared --network host cloudflare/cloudflared tunnel --url http://host.docker.internal:80
+        echo "Cloudflare Tunnel started."
+    fi    
+    docker logs cloudflared | grep -oE '[^[:space:]]+\.trycloudflare\.com'
+fi
+
 
 # Если передан ключ -dev, выполняем только docker-compose для development
 container_name="ollama"
 image="ollama/ollama"
 command_to_run="ollama run llama3.1:8b-instruct-q4_K_M"
+
 
 if [[ "$1" == "-dev" ]]; then
     echo "Starting docker-compose for development..."
@@ -134,14 +164,6 @@ else
             $DOCKER_COMPOSE_CMD up -d
         fi
     fi
-fi
-
-# Запускаем cloudflared tunnel, если передан флаг -cloud
-if [[ "$1" == "-cloud" ]]; then
-    echo "Starting Cloudflare Tunnel..."
-    docker run -d --name cloudflared --network host cloudflare/cloudflared tunnel --url http://host.docker.internal:80
-    docker logs cloudflared | grep -oE '[^[:space:]]+\.trycloudflare\.com'
-    echo "Cloudflare Tunnel started."
 fi
 
 cd "$CURRENT_DIR" || exit
