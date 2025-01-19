@@ -128,6 +128,12 @@ services:
       - backend_postgres
       - kafka1
 
+  cloudflared:
+    image: cloudflare/cloudflared
+    container_name: cloudflare-tunnel
+    restart: unless-stopped
+    command: tunnel --url http://nginx:80
+
 volumes:
   postgres_data:
   backend_postgres_data:

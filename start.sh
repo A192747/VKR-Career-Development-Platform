@@ -165,7 +165,8 @@ stop_cloudflared_container() {
 }
 
 echo_cloudflared_url() {
-    docker logs --tail 17 cloudflared
+    sleep 5
+    docker logs cloudflare-tunnel
 }
 
 
@@ -174,8 +175,7 @@ echo_cloudflared_url() {
 case "$1" in
     "-cloud")
         stop_all_docker_compose
-        start_cloudflared_tunnel
-        start_ollama_container
+	start_ollama_container
         start_full_project
         echo_cloudflared_url
         ;;
@@ -187,7 +187,6 @@ case "$1" in
     "-down")
         stop_all_docker_compose
         stop_ollama_container
-        stop_and_remove_cloudflared
         ;;
     "-down-all")
         stop_all_docker_compose
