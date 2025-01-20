@@ -50,7 +50,7 @@ services:
     volumes:
       - ./cfg/nginx/nginx.conf:/etc/nginx/nginx.conf
     ports:
-      - 80:80
+      - 8181:8181
   
   zoo1:
     image: confluentinc/cp-zookeeper:7.3.2
@@ -114,6 +114,7 @@ services:
     depends_on:
       - backend_postgres
       - keycloak_web
+      - cloudflared
 
   sender-app:
     build:
@@ -127,6 +128,12 @@ services:
     depends_on:
       - backend_postgres
       - kafka1
+
+  cloudflared:
+    image: cloudflare/cloudflared
+    container_name: cloudflare-tunnel
+    restart: unless-stopped
+    command: tunnel --url http://nginx:8181
 
 volumes:
   postgres_data:

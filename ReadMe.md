@@ -8,6 +8,7 @@
 ```bash
 ./start.sh
 ```
+После выполнения команды по умолчанию запускается Cloudflared Tunnel, в консоли выведется https ссылка (далее cloudflared-url) для доступа к api через интернет. 
 
 ## Для разработки (postgres, kafka, zoo, keycloak и Ollama)
 ```bash
@@ -22,14 +23,14 @@
 
 ## Для остановки всех докер контейнеров
 > [!WARNING]
-> После выполнения данной команды будут отчищены все образы! Данная команда необходима, если нужно пересобрать все контейнеры.
-
+> После выполнения данной команды будут отчищены почти все образы! Данная команда необходима, если нужно пересобрать все контейнеры.
 ```bash
 ./start.sh -down-all
 ```
 
 ### Документация к api находится по адресу: </br>
-http://localhost:80/swagger-ui/index.html
+* Локально http://localhost:8181/swagger-ui/index.html
+* Удаленно https://${cloudflared-url}/swagger-ui/index.html
 
 ### Архитектура проекта
 ![Screenshot](https://github.com/A192747/VKR-Career-Development-Platform/blob/develop/Info/images/architecture.jpg)
@@ -37,7 +38,7 @@ http://localhost:80/swagger-ui/index.html
 ### Логин пользователя
 ``` http request
 POST /auth HTTP/1.1
-Host: localhost:80
+Host: ${cloudflared-url:localhost:8181}
 Content-Type: application/x-www-form-urlencoded
 
 grant_type=password&client_id=my_client&username=useruser&password=userpassword
