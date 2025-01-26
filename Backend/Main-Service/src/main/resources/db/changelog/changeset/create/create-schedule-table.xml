@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+
+    <changeSet id="create-schedule-table" author="A192747" runOnChange="true">
+        <sql>
+                create table if not exists schedule(
+                    id BIGSERIAL PRIMARY KEY ,
+                    name varchar (255) not null,
+                    time_begin timestamp not null,
+                    time_end timestamp not null,
+                    comment varchar,
+                    ready_status boolean,
+                    reviewer_user_id UUID references user_profile(id) on delete cascade on update cascade,
+                    reviewed_user_id UUID references user_profile(id) on delete cascade on update cascade,
+                    interview_format varchar not null,
+                    promotion_id BIGINT references promotion(id) on delete cascade on update cascade
+                );
+        </sql>
+    </changeSet>
+</databaseChangeLog>

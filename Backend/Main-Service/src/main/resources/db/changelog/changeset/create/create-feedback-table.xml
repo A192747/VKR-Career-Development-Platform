@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+
+    <changeSet id="create-feedback-table" author="A192747" runOnChange="true">
+        <sql>
+                create table if not exists feedback(
+                    id BIGSERIAL PRIMARY KEY ,
+                    text varchar not null,
+                    reviewer_user_id UUID references user_profile(id),
+                    reviewed_user_id UUID references user_profile(id),
+                    confirmed boolean not null,
+                    promotion_id BIGINT references promotion(id),
+                    related_type varchar not null,
+                    related_id BIGINT not null
+                );
+        </sql>
+    </changeSet>
+</databaseChangeLog>
