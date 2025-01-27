@@ -1,4 +1,4 @@
-package org.example.mainservice.userInteraction.userProfile.service.internal;
+package org.example.mainservice.course.userProfile.service.internal;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.mainservice.course.grade.service.internal.Grade;
+import org.example.mainservice.course.promotion.service.internal.Promotion;
 import org.example.mainservice.course.topic.service.internal.Topic;
 
 import java.time.Instant;
@@ -19,7 +20,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class UserProfile {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id")
     private UUID id;
 
@@ -39,4 +39,7 @@ public class UserProfile {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "current_grade_id", nullable = false)
     private Grade grade;
+
+    @OneToMany(mappedBy = "userProfile", fetch = FetchType.LAZY)
+    private List<Promotion> promotions;
 }

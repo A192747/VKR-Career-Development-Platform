@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.mainservice.course.topic.service.TopicCreateDTO;
 import org.example.mainservice.course.topic.service.TopicDTO;
 import org.example.mainservice.course.topic.service.TopicMapper;
 import org.example.mainservice.course.topic.service.TopicService;
@@ -75,7 +76,7 @@ public class TopicController {
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public long save(@RequestBody TopicDTO topicDTO) {
+    public long save(@RequestBody TopicCreateDTO topicDTO) {
         log.info("Topic value {}", topicDTO);
         return topicService.save(topicMapper.toEntity(topicDTO));
     }

@@ -11,8 +11,8 @@
                 create table if not exists user_topic(
                     id BIGSERIAL PRIMARY KEY,
                     commit_link varchar,
-                    updated_at timestamp,
-                    topic_status varchar,
+                    updated_at timestamp not null,
+                    topic_status varchar not null,
                     user_id UUID references user_profile(id) on delete cascade on update cascade,
                     topic_id BIGINT references topic(id) on delete cascade on update cascade,
                     promotion_id BIGINT references promotion(id) on delete cascade on update cascade

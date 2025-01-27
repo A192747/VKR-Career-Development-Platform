@@ -2203,6 +2203,7 @@
   },
   "users": [
   {
+    "id": "fc248b6b-e011-4e15-9b50-106ee0e3848e",
     "username": "adminuser",
     "enabled": true,
     "emailVerified": true,
@@ -2216,10 +2217,12 @@
       }
     ],
     "realmRoles": [
-      "ADMIN"
+      "ADMIN",
+      "USER"
     ]
   },
   {
+    "id": "fc248b6b-e011-4e15-9b50-106ee0e3847e",
     "username": "useruser",
     "enabled": true,
     "emailVerified": true,

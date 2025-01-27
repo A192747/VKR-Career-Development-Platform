@@ -1,15 +1,14 @@
-package org.example.mainservice.userInteraction.userProfile.service;
+package org.example.mainservice.course.userProfile.service;
 
-import org.example.mainservice.course.topic.service.internal.Topic;
-import org.example.mainservice.userInteraction.userProfile.service.internal.UserProfile;
+import org.example.mainservice.course.userProfile.service.internal.UserProfile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 
-import java.util.List;
+import java.time.Instant;
 import java.util.UUID;
 
 public interface UserProfileService {
-    UUID save(UserProfile userProfile);
+    UUID save(UserProfile userProfile, Long gradeId);
     void update(UserProfile userProfile);
     void delete(UUID id);
     UserProfile getUserProfileById(UUID id);

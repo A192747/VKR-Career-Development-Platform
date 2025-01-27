@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.example.mainservice.course.grade.service.GradeCreateDTO;
 import org.example.mainservice.course.grade.service.GradeDTO;
 import org.example.mainservice.course.grade.service.GradeMapper;
 import org.example.mainservice.course.grade.service.GradeService;
@@ -130,7 +131,7 @@ public class GradeController {
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public long save(@RequestBody GradeDTO gradeDTO) {
+    public long save(@RequestBody GradeCreateDTO gradeDTO) {
         return gradeService.save(gradeMapper.toEntity(gradeDTO));
     }
 

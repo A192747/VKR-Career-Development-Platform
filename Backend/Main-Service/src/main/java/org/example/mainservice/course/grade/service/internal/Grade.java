@@ -1,10 +1,9 @@
 package org.example.mainservice.course.grade.service.internal;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.example.mainservice.course.topic.service.internal.Topic;
-import org.example.mainservice.userInteraction.userProfile.service.internal.UserProfile;
+import org.example.mainservice.course.userProfile.service.internal.UserProfile;
 
 import java.util.List;
 

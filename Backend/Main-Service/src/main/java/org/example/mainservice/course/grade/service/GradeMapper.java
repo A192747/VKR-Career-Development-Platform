@@ -12,4 +12,6 @@ public interface GradeMapper {
     @Mapping(target = "id", source = "id")
     @Mapping(target = "name", source = "name")
     Grade toEntity(GradeDTO dto);
+    @Mapping(target = "name", source = "name")
+    Grade toEntity(GradeCreateDTO dto);
 }

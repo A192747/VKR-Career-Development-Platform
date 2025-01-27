@@ -1,4 +1,4 @@
-package org.example.mainservice.userInteraction.userProfile;
+package org.example.mainservice.course.userProfile;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -7,12 +7,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
-import org.example.mainservice.course.topic.service.TopicDTO;
-import org.example.mainservice.course.topic.service.TopicMapper;
-import org.example.mainservice.userInteraction.userProfile.service.UserProfileDTO;
-import org.example.mainservice.userInteraction.userProfile.service.UserProfileMapper;
-import org.example.mainservice.userInteraction.userProfile.service.UserProfileService;
-import org.springframework.beans.factory.annotation.Value;
+import org.example.mainservice.course.userProfile.service.UserProfileCreateDTO;
+import org.example.mainservice.course.userProfile.service.UserProfileDTO;
+import org.example.mainservice.course.userProfile.service.UserProfileMapper;
+import org.example.mainservice.course.userProfile.service.UserProfileService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -21,7 +19,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -32,8 +29,8 @@ public class UserProfileController {
     private final UserProfileService userProfileService;
     private final UserProfileMapper userProfileMapper;
 
-    @Operation(summary = "Get my userId",
-            description = "You can get userId (for current user)")
+    @Operation(summary = "Get my profile info",
+            description = "You can get profile info (for current user)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "UserId successfully got",
                     content = @Content(mediaType = "application/json")),
@@ -42,9 +39,14 @@ public class UserProfileController {
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/me")
-    public Object getMe() {
+    public UserProfileDTO getMe() {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication.getName();
+        return userProfileMapper.toDTO(
+                userProfileService.getUserProfileById(
+                        UUID.fromString(authentication.getName()
+                        )
+                )
+        );
     }
 
 
@@ -56,14 +58,11 @@ public class UserProfileController {
     })
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public UserProfileDTO getById(@PathVariable UUID id) {
         return userProfileMapper.toDTO(userProfileService.getUserProfileById(id));
     }
-
-
-
 
 
     @Operation(summary = "Set new grade grade for user",
@@ -81,7 +80,6 @@ public class UserProfileController {
     }
 
 
-
     @Operation(summary = "Get users page (list)",
             description = "You can get page of users.")
     @ApiResponses(value = {
@@ -90,7 +88,7 @@ public class UserProfileController {
     })
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public Page<UserProfileDTO> getGradesPage(@RequestParam(name = "page", required = false, defaultValue = "0") @Min(value = 0) Integer page,
                                               @RequestParam(name = "limit", required = false, defaultValue = "5") @Min(value = 1) @Max(value = 100) Integer limit,
@@ -98,7 +96,6 @@ public class UserProfileController {
         Sort sort = Sort.by(sortDirection, "lastName");
         return userProfileService.getAllUserProfiles(page, limit, sort).map(userProfileMapper::toDTO);
     }
-
 
 
     @Operation(summary = "Save grade",
@@ -111,8 +108,11 @@ public class UserProfileController {
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public UUID save(@RequestBody UserProfileDTO userProfileDTO) {
-        return userProfileService.save(userProfileMapper.toEntity(userProfileDTO));
+    public UUID save(@RequestBody UserProfileCreateDTO userProfileDTO) {
+        return userProfileService.save(
+                userProfileMapper.toEntity(userProfileDTO),
+                userProfileDTO.getGradeId()
+        );
     }
 
 
@@ -129,7 +129,6 @@ public class UserProfileController {
     public void update(@RequestBody UserProfileDTO userProfileDTO) {
         userProfileService.update(userProfileMapper.toEntity(userProfileDTO));
     }
-
 
 
     @Operation(summary = "Delete user",

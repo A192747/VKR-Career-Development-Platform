@@ -1,4 +1,4 @@
-package org.example.mainservice.userInteraction.userProfile.service;
+package org.example.mainservice.course.userProfile.service;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;

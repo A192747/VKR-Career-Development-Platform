@@ -1,21 +1,19 @@
-package org.example.mainservice.userInteraction.userProfile.service;
+package org.example.mainservice.course.userProfile.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.mainservice.course.grade.service.internal.Grade;
 import org.example.mainservice.course.grade.service.internal.GradeRepository;
-import org.example.mainservice.course.topic.service.internal.Topic;
-import org.example.mainservice.course.topic.service.internal.TopicRepository;
 import org.example.mainservice.exception.ResourceNotFoundException;
-import org.example.mainservice.userInteraction.userProfile.service.internal.UserProfile;
-import org.example.mainservice.userInteraction.userProfile.service.internal.UserProfileRepository;
+import org.example.mainservice.course.userProfile.service.internal.UserProfile;
+import org.example.mainservice.course.userProfile.service.internal.UserProfileRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.time.Instant;
 import java.util.UUID;
 
 @Service
@@ -28,7 +26,9 @@ public class UserProfileServiceImpl implements UserProfileService {
     private final GradeRepository gradeRepository;
 
     @Override
-    public UUID save(UserProfile userProfile) {
+    public UUID save(UserProfile userProfile, Long gradeId) {
+        userProfile.setGrade(findGradeById(gradeId));
+        log.info("Saving userProfile: {}", userProfile);
         return userProfileRepository.save(userProfile).getId();
     }
 

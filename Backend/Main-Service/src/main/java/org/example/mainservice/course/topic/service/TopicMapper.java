@@ -12,4 +12,6 @@ public interface TopicMapper {
     @Mapping(target = "id", source = "id")
     @Mapping(target = "name", source = "name")
     Topic toEntity(TopicDTO dto);
+    @Mapping(target = "name", source = "name")
+    Topic toEntity(TopicCreateDTO dto);
 }
