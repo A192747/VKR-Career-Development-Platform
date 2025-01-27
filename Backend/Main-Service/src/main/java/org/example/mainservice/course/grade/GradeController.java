@@ -76,7 +76,7 @@ public class GradeController {
     })
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{id}/topics")
     public void saveTopics(@PathVariable @Min(value = 1) Long id, @RequestParam Long topicId) {
         gradeService.saveTopic(id, topicId);
@@ -93,7 +93,7 @@ public class GradeController {
     })
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}/topics")
     public void deleteTopics(@PathVariable @Min(value = 1) Long id, @RequestParam Long topicId) {
         gradeService.deleteTopic(id, topicId);
@@ -128,7 +128,7 @@ public class GradeController {
     })
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public long save(@RequestBody GradeDTO gradeDTO) {
         return gradeService.save(gradeMapper.toEntity(gradeDTO));
@@ -143,7 +143,7 @@ public class GradeController {
     })
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping
     public void update(@RequestBody GradeDTO gradeDTO) {
         gradeService.update(gradeMapper.toEntity(gradeDTO));
@@ -159,9 +159,9 @@ public class GradeController {
     })
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public void update(@PathVariable @Min(value = 1) Long id) {
+    public void delete(@PathVariable @Min(value = 1) Long id) {
         gradeService.delete(id);
     }
 

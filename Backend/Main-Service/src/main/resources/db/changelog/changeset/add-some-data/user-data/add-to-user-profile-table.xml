@@ -6,12 +6,11 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
 
-    <changeSet id="create-grade-table" author="A192747" runOnChange="true">
+    <changeSet id="add-to-user-profile-table" author="A192747" runOnChange="true">
         <sql>
-                create table if not exists grade(
-                    id BIGSERIAL PRIMARY KEY,
-                    name varchar (255) not null
-                );
+                insert into user_profile(id, first_name, last_name, email, date_of_birth, current_grade_id)
+                values
+                    ('fc248b6b-e011-4e15-9b50-106ee0e3847e', 'User-first-name', 'User-last-name', 'some-email@mail.ru', '2025-01-27 14:00:00',1)
         </sql>
     </changeSet>
 </databaseChangeLog>

@@ -6,12 +6,12 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
 
-    <changeSet id="create-grade-table" author="A192747" runOnChange="true">
+    <changeSet id="add-to-grade-table" author="A192747" runOnChange="true">
         <sql>
-                create table if not exists grade(
-                    id BIGSERIAL PRIMARY KEY,
-                    name varchar (255) not null
-                );
+            INSERT INTO grade (name)
+            VALUES ('Frontend junior'),
+                   ('Frontend middle'),
+                   ('Frontend senior');
         </sql>
     </changeSet>
 </databaseChangeLog>

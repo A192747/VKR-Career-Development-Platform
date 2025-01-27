@@ -1,0 +1,149 @@
+package org.example.mainservice.userInteraction.userProfile;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import lombok.RequiredArgsConstructor;
+import org.example.mainservice.course.topic.service.TopicDTO;
+import org.example.mainservice.course.topic.service.TopicMapper;
+import org.example.mainservice.userInteraction.userProfile.service.UserProfileDTO;
+import org.example.mainservice.userInteraction.userProfile.service.UserProfileMapper;
+import org.example.mainservice.userInteraction.userProfile.service.UserProfileService;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/user")
+@RequiredArgsConstructor
+public class UserProfileController {
+
+    private final UserProfileService userProfileService;
+    private final UserProfileMapper userProfileMapper;
+
+    @Operation(summary = "Get my userId",
+            description = "You can get userId (for current user)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "UserId successfully got",
+                    content = @Content(mediaType = "application/json")),
+    })
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/me")
+    public Object getMe() {
+        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getName();
+    }
+
+
+    @Operation(summary = "Get user with grade info by userId",
+            description = "You can get user info by using its id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User successfully got",
+                    content = @Content(mediaType = "application/json")),
+    })
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/{id}")
+    public UserProfileDTO getById(@PathVariable UUID id) {
+        return userProfileMapper.toDTO(userProfileService.getUserProfileById(id));
+    }
+
+
+
+
+
+    @Operation(summary = "Set new grade grade for user",
+            description = "You can set new grade for user only if you are an admin")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Grade successfully set",
+                    content = @Content(mediaType = "application/json")),
+    })
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/{id}/grade")
+    public void setNewGrade(@PathVariable UUID id, @RequestParam @Min(value = 1) Long gradeId) {
+        userProfileService.setNewGrade(id, gradeId);
+    }
+
+
+
+    @Operation(summary = "Get users page (list)",
+            description = "You can get page of users.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Users page successfully got",
+                    content = @Content(mediaType = "application/json")),
+    })
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping
+    public Page<UserProfileDTO> getGradesPage(@RequestParam(name = "page", required = false, defaultValue = "0") @Min(value = 0) Integer page,
+                                              @RequestParam(name = "limit", required = false, defaultValue = "5") @Min(value = 1) @Max(value = 100) Integer limit,
+                                              @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") Sort.Direction sortDirection) {
+        Sort sort = Sort.by(sortDirection, "lastName");
+        return userProfileService.getAllUserProfiles(page, limit, sort).map(userProfileMapper::toDTO);
+    }
+
+
+
+    @Operation(summary = "Save grade",
+            description = "You can save grade, and get it`s id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Save success",
+                    content = @Content(mediaType = "application/json")),
+    })
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping
+    public UUID save(@RequestBody UserProfileDTO userProfileDTO) {
+        return userProfileService.save(userProfileMapper.toEntity(userProfileDTO));
+    }
+
+
+    @Operation(summary = "Update grade",
+            description = "You can update grade")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Update success",
+                    content = @Content(mediaType = "application/json")),
+    })
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping
+    public void update(@RequestBody UserProfileDTO userProfileDTO) {
+        userProfileService.update(userProfileMapper.toEntity(userProfileDTO));
+    }
+
+
+
+    @Operation(summary = "Delete user",
+            description = "You can delete user only if you are admin")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Delete success",
+                    content = @Content(mediaType = "application/json")),
+    })
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable UUID id) {
+        userProfileService.delete(id);
+    }
+
+}

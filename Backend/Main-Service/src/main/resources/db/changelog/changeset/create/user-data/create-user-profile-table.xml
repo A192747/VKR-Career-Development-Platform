@@ -14,7 +14,7 @@
                     last_name varchar (255) not null,
                     email VARCHAR(255) NOT NULL UNIQUE,
                     date_of_birth timestamp not null,
-                    current_grade_id BIGINT references topic(id) not null
+                    current_grade_id BIGINT references grade(id) not null
                 );
         </sql>
     </changeSet>

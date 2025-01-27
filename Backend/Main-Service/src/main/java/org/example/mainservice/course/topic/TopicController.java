@@ -73,7 +73,7 @@ public class TopicController {
     })
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public long save(@RequestBody TopicDTO topicDTO) {
         log.info("Topic value {}", topicDTO);
@@ -89,7 +89,7 @@ public class TopicController {
     })
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping
     public void update(@RequestBody TopicDTO TopicDTO) {
         topicService.update(topicMapper.toEntity(TopicDTO));
@@ -105,7 +105,7 @@ public class TopicController {
     })
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public void update(@PathVariable @Min(value = 1) Long id) {
         topicService.delete(id);
