@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.example.mainservice.course.grade.service.internal.Grade;
 import org.example.mainservice.course.promotion.service.internal.Promotion;
 import org.example.mainservice.course.topic.service.internal.Topic;
+import org.example.mainservice.course.userTopic.service.internal.UserTopic;
 
 import java.time.Instant;
 import java.util.List;
@@ -42,4 +43,7 @@ public class UserProfile {
 
     @OneToMany(mappedBy = "userProfile", fetch = FetchType.LAZY)
     private List<Promotion> promotions;
+
+    @OneToMany(mappedBy = "userProfile", fetch = FetchType.LAZY)
+    private List<UserTopic> userTopics;
 }

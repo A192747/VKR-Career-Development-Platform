@@ -30,12 +30,15 @@ public class PromotionServiceImpl implements PromotionService {
     private final UserProfileRepository userProfileRepository;
 
     @Override
-    public Long save(UUID userId, Long currentGrade, Long newGrade) {
-        Promotion promotion = new Promotion();
-        promotion.setUserProfile(findUserById(userId));
-        promotion.setCurrentGrade(findGradeById(currentGrade));
-        promotion.setNewGrade(findGradeById(newGrade));
+    public Long save(Promotion promotion) {
+        promotion.setUserProfile(findUserById(promotion.getUserProfile().getId()));
+        UserProfile currentUserProfile = findUserById(promotion.getUserProfile().getId());
+        promotion.setCurrentGrade(currentUserProfile.getGrade());
+        promotion.setNewGrade(findGradeById(promotion.getNewGrade().getId()));
         promotion.setPromotionDate(Instant.now());
+
+        //TODO добавить автоматическое добавление прогресса (UserTopic) для пользователя
+
         return promotionRepository.save(promotion).getId();
     }
 

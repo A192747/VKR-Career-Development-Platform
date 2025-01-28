@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface PromotionService {
-    Long save(UUID userId, Long currentGrade, Long newGrade);
+    Long save(Promotion promotion);
     void update(Promotion promotion);
     void delete(Long id);
     Promotion findById(Long id);

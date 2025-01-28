@@ -50,7 +50,7 @@ public class UserProfileController {
     }
 
 
-    @Operation(summary = "Get user with grade info by userId",
+    @Operation(summary = "Get user by userId",
             description = "You can get user info by using its id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User successfully got",
@@ -65,7 +65,7 @@ public class UserProfileController {
     }
 
 
-    @Operation(summary = "Set new grade grade for user",
+    @Operation(summary = "Set new grade for user",
             description = "You can set new grade for user only if you are an admin")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Grade successfully set",
@@ -98,8 +98,8 @@ public class UserProfileController {
     }
 
 
-    @Operation(summary = "Save grade",
-            description = "You can save grade, and get it`s id")
+    @Operation(summary = "Save user",
+            description = "You can save user, and get it`s id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Save success",
                     content = @Content(mediaType = "application/json")),
@@ -116,8 +116,8 @@ public class UserProfileController {
     }
 
 
-    @Operation(summary = "Update grade",
-            description = "You can update grade")
+    @Operation(summary = "Update user",
+            description = "You can update user")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Update success",
                     content = @Content(mediaType = "application/json")),

@@ -17,9 +17,6 @@ public class PromotionCreateDTO {
     @JsonProperty("user_profile_id")
     private UUID userProfileId;
 
-    @NotBlank
-    @JsonProperty("current_grade_id")
-    private Long currentGradeId;
 
     @NotBlank
     @JsonProperty("new_grade_id")

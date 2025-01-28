@@ -2,8 +2,10 @@ package org.example.mainservice.exception;
 
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.BadRequestException;
 import org.apache.logging.log4j.util.InternalException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -53,5 +55,20 @@ public class GlobalExceptionHandler {
                 .collect(Collectors.toList());
 
         return new ExceptionResponse(violations, new Date());
+    }
+
+
+    @ResponseBody
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(AccessDeniedException.class)
+    public ExceptionResponse handleAccessDeniedException(AccessDeniedException exception) {
+        return createResponse(exception);
+    }
+
+    @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(BadRequestException.class)
+    public ExceptionResponse handleBadRequestException(Exception exception) {
+        return createResponse(exception);
     }
 }

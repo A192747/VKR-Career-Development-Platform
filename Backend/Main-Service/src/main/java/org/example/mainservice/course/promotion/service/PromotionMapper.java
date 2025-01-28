@@ -25,4 +25,9 @@ public interface PromotionMapper {
     @Mapping(target = "currentGrade", source = "currentGrade")
     @Mapping(target = "newGrade", source = "newGrade")
     Promotion toEntity(PromotionDTO dto);
+
+
+    @Mapping(target = "userProfile.id", source = "userProfileId")
+    @Mapping(target = "newGrade.id", source = "newGradeId")
+    Promotion toEntity(PromotionCreateDTO dto);
 }
