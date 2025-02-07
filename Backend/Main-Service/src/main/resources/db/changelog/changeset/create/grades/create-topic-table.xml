@@ -6,7 +6,7 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
 
-    <changeSet id="create-topic-table" author="A192747" runOnChange="true">
+    <changeSet id="create-feedback-table" author="A192747" runOnChange="true">
         <sql>
             create table if not exists topic(
                 id BIGSERIAL PRIMARY KEY,

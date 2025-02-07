@@ -12,8 +12,8 @@
                     id BIGSERIAL PRIMARY KEY ,
                     promotion_date timestamp not null,
                     user_id UUID references user_profile(id) on delete cascade on update cascade,
-                    current_grade_id BIGINT references topic(id) on delete cascade on update cascade,
-                    new_grade_id BIGINT references topic(id) on delete cascade on update cascade
+                    current_grade_id BIGINT references grade(id) on delete cascade on update cascade,
+                    new_grade_id BIGINT references grade(id) on delete cascade on update cascade
                 );
         </sql>
     </changeSet>

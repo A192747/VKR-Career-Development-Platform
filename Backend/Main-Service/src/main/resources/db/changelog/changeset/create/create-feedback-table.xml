@@ -16,7 +16,8 @@
                     confirmed boolean not null,
                     promotion_id BIGINT references promotion(id),
                     related_type varchar not null,
-                    related_id BIGINT not null
+                    related_id BIGINT not null,
+                    created_at timestamp not null
                 );
         </sql>
     </changeSet>

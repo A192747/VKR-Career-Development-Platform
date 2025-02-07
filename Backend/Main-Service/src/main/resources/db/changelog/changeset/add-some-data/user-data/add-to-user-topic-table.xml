@@ -6,7 +6,7 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
 
-    <changeSet id="create-user-topic-table" author="A192747" runOnChange="true">
+    <changeSet id="create-user-feedback-table" author="A192747" runOnChange="true">
         <sql>
             insert into user_topic (commit_link, updated_at, topic_status, user_id, topic_id, promotion_id)
             values
