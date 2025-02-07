@@ -117,21 +117,6 @@ public class UserTopicController {
 
 
 
-    @Operation(summary = "Save new progress",
-            description = "You can save new progress, and get it`s id")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Save success",
-                    content = @Content(mediaType = "application/json")),
-    })
-    @ResponseBody
-    @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping
-    public Long save(@RequestBody UserTopicCreateDTO userTopicCreateDTO) throws BadRequestException {
-        return userTopicService.save(userTopicMapper.toEntity(userTopicCreateDTO));
-    }
-
-
     @Operation(summary = "Update progress",
             description = "You can update progress")
     @ApiResponses(value = {
@@ -146,20 +131,5 @@ public class UserTopicController {
         userTopicService.update(userTopicMapper.toEntity(userTopicDTO));
     }
 
-
-
-    @Operation(summary = "Delete progress",
-            description = "You can delete progress only if you are admin")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Delete success",
-                    content = @Content(mediaType = "application/json")),
-    })
-    @ResponseBody
-    @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        userTopicService.delete(id);
-    }
 
 }

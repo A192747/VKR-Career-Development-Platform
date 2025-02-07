@@ -3,12 +3,14 @@ package org.example.mainservice.course.promotion.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.BadRequestException;
 import org.example.mainservice.course.grade.service.internal.Grade;
 import org.example.mainservice.course.grade.service.internal.GradeRepository;
 import org.example.mainservice.course.promotion.service.internal.Promotion;
 import org.example.mainservice.course.promotion.service.internal.PromotionRepository;
 import org.example.mainservice.course.userProfile.service.internal.UserProfile;
 import org.example.mainservice.course.userProfile.service.internal.UserProfileRepository;
+import org.example.mainservice.course.userTopic.service.UserTopicService;
 import org.example.mainservice.exception.ResourceNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,18 +30,36 @@ public class PromotionServiceImpl implements PromotionService {
     private final PromotionRepository promotionRepository;
     private final GradeRepository gradeRepository;
     private final UserProfileRepository userProfileRepository;
+    private final UserTopicService userTopicService;
 
     @Override
-    public Long save(Promotion promotion) {
-        promotion.setUserProfile(findUserById(promotion.getUserProfile().getId()));
+    public Long save(Promotion promotion) throws BadRequestException {
         UserProfile currentUserProfile = findUserById(promotion.getUserProfile().getId());
+        promotion.setUserProfile(currentUserProfile);
         promotion.setCurrentGrade(currentUserProfile.getGrade());
-        promotion.setNewGrade(findGradeById(promotion.getNewGrade().getId()));
+        Grade newGrade = findGradeById(promotion.getNewGrade().getId());
+        promotion.setNewGrade(newGrade);
+
+        isPromotionRequestCorrect(promotion);
+
         promotion.setPromotionDate(Instant.now());
+        Promotion resultPromotion = promotionRepository.save(promotion);
+        newGrade.getTopics().forEach(topic -> userTopicService.save(currentUserProfile, newGrade, topic, resultPromotion));
 
-        //TODO добавить автоматическое добавление прогресса (UserTopic) для пользователя
+        return resultPromotion.getId();
+    }
 
-        return promotionRepository.save(promotion).getId();
+    void isPromotionRequestCorrect(Promotion promotion) throws BadRequestException {
+        UserProfile currentUserProfile = promotion.getUserProfile();
+        if (currentUserProfile.getGrade().equals(promotion.getNewGrade())) {
+            throw new BadRequestException("Вы пытаетесь установить Grade равный текущему");
+        }
+        List<Promotion> currentPromotions = currentUserProfile.getPromotions();
+        for (Promotion currentPromotion : currentPromotions) {
+            if (currentPromotion.getNewGrade().equals(promotion.getNewGrade()))
+                throw new BadRequestException("Вы пытаетесь установить Grade, который уже указан для пользователя");
+        }
+
     }
 
     @Override
@@ -55,8 +75,13 @@ public class PromotionServiceImpl implements PromotionService {
 
     @Override
     public void delete(Long id) {
-        log.info("Delete grade with id = {}", id);
+        log.info("Delete promotion with id = {}", id);
         Promotion promotionValue = findPromotionById(id);
+        promotionValue.getUserProfile().getUserTopics().forEach(topic -> {
+            if (topic.getPromotion().equals(promotionValue)) {
+                userTopicService.delete(topic);
+            }
+        });
         promotionRepository.delete(promotionValue);
     }
 

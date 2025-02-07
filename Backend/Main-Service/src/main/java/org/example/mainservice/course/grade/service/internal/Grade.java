@@ -27,7 +27,7 @@ public class Grade {
     )
     private List<Topic> topics;
 
-    //TODO добавить обработку для получения списка пользователей с данным грейдом?
+
     @OneToMany(mappedBy = "grade", fetch = FetchType.LAZY)
     private List<UserProfile> userProfiles;
 }

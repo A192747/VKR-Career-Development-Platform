@@ -26,11 +26,6 @@ public interface UserTopicMapper {
     @Mapping(target = "promotion.id", source = "promotionId")
     UserTopic toEntity(UserTopicDTO dto);
 
-    @Mapping(target = "topic.id", source = "topicId")
-    @Mapping(target = "userProfile.id", source = "userProfileId")
-    @Mapping(target = "promotion.id", source = "promotionId")
-    UserTopic toEntity(UserTopicCreateDTO dto);
-
     @Mapping(target = "id", source = "id")
     @Mapping(target = "commitLink", source = "commitLink")
     @Mapping(target = "topicStatus", source = "topicStatus")

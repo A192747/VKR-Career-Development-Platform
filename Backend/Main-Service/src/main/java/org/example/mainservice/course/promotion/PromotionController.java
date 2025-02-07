@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.example.mainservice.course.promotion.service.PromotionCreateDTO;
 import org.example.mainservice.course.promotion.service.PromotionDTO;
 import org.example.mainservice.course.promotion.service.PromotionMapper;
@@ -112,7 +113,7 @@ public class PromotionController {
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public Long save(@RequestBody PromotionCreateDTO promotionDTO) {
+    public Long save(@RequestBody PromotionCreateDTO promotionDTO) throws BadRequestException {
         return promotionService.save(promotionMapper.toEntity(promotionDTO));
     }
 

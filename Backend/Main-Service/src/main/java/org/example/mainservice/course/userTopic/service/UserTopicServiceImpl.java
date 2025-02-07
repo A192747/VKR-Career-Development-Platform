@@ -7,6 +7,7 @@ import org.apache.coyote.BadRequestException;
 import org.example.mainservice.course.grade.service.internal.Grade;
 import org.example.mainservice.course.grade.service.internal.GradeRepository;
 import org.example.mainservice.course.promotion.PromotionController;
+import org.example.mainservice.course.promotion.service.PromotionServiceImpl;
 import org.example.mainservice.course.promotion.service.internal.Promotion;
 import org.example.mainservice.course.promotion.service.internal.PromotionRepository;
 import org.example.mainservice.course.topic.service.internal.Topic;
@@ -38,19 +39,16 @@ public class UserTopicServiceImpl implements UserTopicService {
     private final PromotionRepository promotionRepository;
     private final TopicRepository topicRepository;
 
+
     @Override
-    public Long save(UserTopic userTopic) throws BadRequestException {
-        userTopic.setTopicStatus(TopicStatus.NOT_STARTED);
+    public void save(UserProfile currentUserProfile, Grade newGrade, Topic topic, Promotion promotion) {
+        UserTopic userTopic = new UserTopic();
+        userTopic.setUserProfile(currentUserProfile);
+        userTopic.setTopic(topic);
+        userTopic.setPromotion(promotion);
+        userTopic.setTopicStatus(TopicStatus.IN_PROCESS);
         userTopic.setUpdatedAt(Instant.now());
-
-        Promotion promotion = findPromotionById(userTopic.getPromotion().getId());
-        isPromotionCorrect(promotion, userTopic.getUserProfile().getId());
-
-        Topic topic = findTopicById(userTopic.getTopic().getId());
-        isTopicCorrect(promotion, topic);
-
-        log.info("Saving userProfile: {}", userTopic);
-        return userTopicRepository.save(userTopic).getId();
+        userTopicRepository.save(userTopic);
     }
 
     @Override
@@ -103,10 +101,9 @@ public class UserTopicServiceImpl implements UserTopicService {
     }
 
     @Override
-    public void delete(Long id) {
-        log.info("Delete userTopic with id = {}", id);
-        UserTopic userTopicValue = findUserTopicById(id);
-        userTopicRepository.delete(userTopicValue);
+    public void delete(UserTopic userTopic) {
+        log.info("Delete userTopic with id = {}", userTopic.getId());
+        userTopicRepository.delete(userTopic);
     }
 
     @Override
