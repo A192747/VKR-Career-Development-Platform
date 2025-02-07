@@ -11,7 +11,7 @@ public interface GradeService {
     long save(Grade grade);
     void update(Grade grade);
     void delete(long id);
-    Grade getGradeById(long id);
+    Grade findById(long id);
 
     Page<Grade> getAllGrades(int page, int size, Sort sort);
     List<Topic> getTopicsForGrade(long id);

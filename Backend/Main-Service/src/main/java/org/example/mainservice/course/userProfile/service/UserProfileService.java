@@ -11,8 +11,9 @@ public interface UserProfileService {
     UUID save(UserProfile userProfile, Long gradeId);
     void update(UserProfile userProfile);
     void delete(UUID id);
-    UserProfile getUserProfileById(UUID id);
+    UserProfile findById(UUID id);
 
     Page<UserProfile> getAllUserProfiles(int page, int size, Sort sort);
     void setNewGrade(UUID userId, long gradeId);
+
 }

@@ -15,12 +15,20 @@ import java.util.UUID;
 
 public interface UserTopicService {
     void update(UserTopic userTopic) throws BadRequestException;
+
     void updateMy(UserTopic userTopic, UUID userID);
+
     void delete(UserTopic userTopic);
-    UserTopic getById(Long id);
+
+    UserTopic findById(Long id);
+
     List<UserTopic> getAllUserTopicByUserId(UUID id);
+
     Page<UserTopic> getAllUserTopic(int page, int size, Sort sort);
+
     void setUserTopic(UUID userId, long userTopicId);
+
     void setUserTopicStatus(long userTopicId, TopicStatus topicStatus);
+
     void save(UserProfile currentUserProfile, Grade newGrade, Topic topic, Promotion promotion);
 }

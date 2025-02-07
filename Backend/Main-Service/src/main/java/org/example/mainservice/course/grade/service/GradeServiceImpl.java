@@ -5,8 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.mainservice.course.grade.service.internal.Grade;
 import org.example.mainservice.course.grade.service.internal.GradeRepository;
+import org.example.mainservice.course.topic.service.TopicService;
 import org.example.mainservice.course.topic.service.internal.Topic;
-import org.example.mainservice.course.topic.service.internal.TopicRepository;
 import org.example.mainservice.exception.ResourceNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,7 +22,7 @@ import java.util.List;
 public class GradeServiceImpl implements GradeService {
 
     private final GradeRepository gradeRepository;
-    private final TopicRepository topicRepository;
+    private final TopicService topicService;
 
     @Override
     public long save(Grade grade) {
@@ -32,7 +32,7 @@ public class GradeServiceImpl implements GradeService {
     @Override
     public void update(Grade grade) {
         log.info("Update grade with id = {}", grade.getId());
-        Grade gradeValue = findGradeById(grade.getId());
+        Grade gradeValue = findById(grade.getId());
         gradeValue.setName(grade.getName());
         gradeRepository.save(gradeValue);
     }
@@ -40,14 +40,16 @@ public class GradeServiceImpl implements GradeService {
     @Override
     public void delete(long id) {
         log.info("Delete grade with id = {}", id);
-        Grade gradeValue = findGradeById(id);
+        Grade gradeValue = findById(id);
         gradeRepository.delete(gradeValue);
     }
 
     @Override
-    public Grade getGradeById(long id) {
+    public Grade findById(long id) {
         log.info("Get grade with id = {}", id);
-        return findGradeById(id);
+        return gradeRepository.findById(id).orElseThrow(() ->
+                new ResourceNotFoundException("Grade with id =  %s not found".formatted(id))
+        );
     }
 
     @Override
@@ -59,22 +61,22 @@ public class GradeServiceImpl implements GradeService {
 
     @Override
     public List<Topic> getTopicsForGrade(long id) {
-        Grade gradeValue = findGradeById(id);
+        Grade gradeValue = findById(id);
         return gradeValue.getTopics();
     }
 
     @Override
     public void saveTopic(long gradeId, long topicId) {
-        Grade gradeValue = findGradeById(gradeId);
-        Topic topicValue = findTopicById(topicId);
+        Grade gradeValue = findById(gradeId);
+        Topic topicValue = topicService.findById(topicId);
         gradeValue.getTopics().add(topicValue);
         gradeRepository.save(gradeValue);
     }
 
     @Override
     public void deleteTopic(long gradeId, long topicId) {
-        Grade gradeValue = findGradeById(gradeId);
-        Topic topicValue = findTopicById(topicId);
+        Grade gradeValue = findById(gradeId);
+        Topic topicValue = topicService.findById(topicId);
         if (!gradeValue.getTopics().contains(topicValue)) {
             throw new ResourceNotFoundException("Topic not found in grade with id = " + gradeId);
         }
@@ -82,15 +84,5 @@ public class GradeServiceImpl implements GradeService {
         gradeRepository.save(gradeValue);
     }
 
-    private Grade findGradeById(long id) {
-        return gradeRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("Grade with id =  %s not found".formatted(id))
-        );
-    }
 
-    private Topic findTopicById(long id) {
-        return topicRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("Topic with id =  %s not found".formatted(id))
-        );
-    }
 }

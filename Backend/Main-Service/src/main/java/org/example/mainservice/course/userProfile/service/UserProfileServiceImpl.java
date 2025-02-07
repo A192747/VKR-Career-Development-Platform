@@ -3,17 +3,16 @@ package org.example.mainservice.course.userProfile.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.mainservice.course.grade.service.GradeService;
 import org.example.mainservice.course.grade.service.internal.Grade;
-import org.example.mainservice.course.grade.service.internal.GradeRepository;
-import org.example.mainservice.exception.ResourceNotFoundException;
 import org.example.mainservice.course.userProfile.service.internal.UserProfile;
 import org.example.mainservice.course.userProfile.service.internal.UserProfileRepository;
+import org.example.mainservice.exception.ResourceNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.util.UUID;
 
 @Service
@@ -23,11 +22,11 @@ import java.util.UUID;
 public class UserProfileServiceImpl implements UserProfileService {
 
     private final UserProfileRepository userProfileRepository;
-    private final GradeRepository gradeRepository;
+    private final GradeService gradeService;
 
     @Override
     public UUID save(UserProfile userProfile, Long gradeId) {
-        userProfile.setGrade(findGradeById(gradeId));
+        userProfile.setGrade(gradeService.findById(gradeId));
         log.info("Saving userProfile: {}", userProfile);
         return userProfileRepository.save(userProfile).getId();
     }
@@ -35,7 +34,7 @@ public class UserProfileServiceImpl implements UserProfileService {
     @Override
     public void update(UserProfile userProfile) {
         log.info("Update user with id = {}", userProfile.getId());
-        UserProfile userProfileValue = findUserById(userProfile.getId());
+        UserProfile userProfileValue = findById(userProfile.getId());
         userProfileValue.setFirstName(userProfile.getFirstName());
         userProfileValue.setLastName(userProfile.getLastName());
         userProfileValue.setEmail(userProfile.getEmail());
@@ -46,42 +45,32 @@ public class UserProfileServiceImpl implements UserProfileService {
     @Override
     public void delete(UUID id) {
         log.info("Delete grade with id = {}", id);
-        UserProfile userProfileValue = findUserById(id);
+        UserProfile userProfileValue = findById(id);
         userProfileRepository.delete(userProfileValue);
     }
 
     @Override
-    public UserProfile getUserProfileById(UUID id) {
+    public UserProfile findById(UUID id) {
         log.info("Get user with id = {}", id);
-        return findUserById(id);
+        return userProfileRepository.findById(id).orElseThrow(() ->
+                new ResourceNotFoundException("Grade with id =  %s not found".formatted(id))
+        );
     }
 
     @Override
     public Page<UserProfile> getAllUserProfiles(int page, int size, Sort sort) {
-        log.info("Get all grades");
+        log.info("Get all userProfiles");
         PageRequest pageable = PageRequest.of(page, size, sort);
         return userProfileRepository.findAll(pageable);
     }
 
     @Override
     public void setNewGrade(UUID userId, long gradeId) {
-        UserProfile userProfileValue = findUserById(userId);
-        Grade grade = findGradeById(gradeId);
+        UserProfile userProfileValue = findById(userId);
+        Grade grade = gradeService.findById(gradeId);
         userProfileValue.setGrade(grade);
         userProfileRepository.save(userProfileValue);
-        gradeRepository.save(grade);
+        gradeService.save(grade);
     }
 
-
-    private UserProfile findUserById(UUID id) {
-        return userProfileRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("Grade with id =  %s not found".formatted(id))
-        );
-    }
-
-    private Grade findGradeById(long id) {
-        return gradeRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("Grade with id =  %s not found".formatted(id))
-        );
-    }
 }

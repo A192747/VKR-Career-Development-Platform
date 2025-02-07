@@ -38,14 +38,11 @@ public class UserProfileController {
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('USER')")
-    @GetMapping("/me")
+    @GetMapping("/my")
     public UserProfileDTO getMe() {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return userProfileMapper.toDTO(
-                userProfileService.getUserProfileById(
-                        UUID.fromString(authentication.getName()
-                        )
-                )
+                userProfileService.findById(UUID.fromString(authentication.getName()))
         );
     }
 
@@ -61,7 +58,7 @@ public class UserProfileController {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public UserProfileDTO getById(@PathVariable UUID id) {
-        return userProfileMapper.toDTO(userProfileService.getUserProfileById(id));
+        return userProfileMapper.toDTO(userProfileService.findById(id));
     }
 
 
@@ -88,7 +85,7 @@ public class UserProfileController {
     })
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('USER')")
     @GetMapping
     public Page<UserProfileDTO> getGradesPage(@RequestParam(name = "page", required = false, defaultValue = "0") @Min(value = 0) Integer page,
                                               @RequestParam(name = "limit", required = false, defaultValue = "5") @Min(value = 1) @Max(value = 100) Integer limit,

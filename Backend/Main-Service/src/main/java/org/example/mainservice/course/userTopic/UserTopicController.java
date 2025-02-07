@@ -8,13 +8,13 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
-import org.example.mainservice.course.promotion.service.PromotionCreateDTO;
-import org.example.mainservice.course.promotion.service.PromotionDTO;
-import org.example.mainservice.course.userTopic.service.*;
+import org.example.mainservice.course.userTopic.service.UserTopicDTO;
+import org.example.mainservice.course.userTopic.service.UserTopicMapper;
+import org.example.mainservice.course.userTopic.service.UserTopicService;
+import org.example.mainservice.course.userTopic.service.UserTopicUpdateMyDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -42,7 +42,7 @@ public class UserTopicController {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public UserTopicDTO getById(@PathVariable Long id) {
-        return userTopicMapper.toDTO(userTopicService.getById(id));
+        return userTopicMapper.toDTO(userTopicService.findById(id));
     }
 
 
@@ -79,7 +79,6 @@ public class UserTopicController {
     }
 
 
-
     @Operation(summary = "Get progress by user id",
             description = "You can get progress value by using user id")
     @ApiResponses(value = {
@@ -95,7 +94,6 @@ public class UserTopicController {
                 .map(userTopicMapper::toDTO)
                 .toList();
     }
-
 
 
     @Operation(summary = "Get progress page (list)",
@@ -114,7 +112,6 @@ public class UserTopicController {
         Sort sort = Sort.by(sortDirection, "id");
         return userTopicService.getAllUserTopic(page, limit, sort).map(userTopicMapper::toDTO);
     }
-
 
 
     @Operation(summary = "Update progress",

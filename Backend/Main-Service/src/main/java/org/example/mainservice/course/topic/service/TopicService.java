@@ -8,7 +8,7 @@ public interface TopicService {
     long save(Topic topic);
     void update(Topic topic);
     void delete(long id);
-    Topic getTopicById(long id);
+    Topic findById(long id);
     Page<Topic> getAllTopics(int page, int size, Sort sort);
 
 }

@@ -45,7 +45,7 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
-    public Topic getTopicById(long id) {
+    public Topic findById(long id) {
         log.info("Get topic with id = {}", id);
         return topicRepository.findById(id).orElseThrow(() -> {
             log.warn("Topic with id: {} not found ", id);

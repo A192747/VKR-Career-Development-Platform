@@ -1,13 +1,11 @@
 package org.example.mainservice.course.grade;
 
-import io.micrometer.common.lang.NonNull;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.example.mainservice.course.grade.service.GradeCreateDTO;
 import org.example.mainservice.course.grade.service.GradeDTO;
@@ -20,8 +18,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -48,7 +44,7 @@ public class GradeController {
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/{id}")
     public GradeDTO getById(@PathVariable @Min(value = 1) Long id) {
-        return gradeMapper.toDTO(gradeService.getGradeById(id));
+        return gradeMapper.toDTO(gradeService.findById(id));
     }
 
 

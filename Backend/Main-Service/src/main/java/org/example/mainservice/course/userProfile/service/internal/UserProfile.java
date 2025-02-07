@@ -5,9 +5,9 @@ import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.mainservice.course.feedback.service.internal.Feedback;
 import org.example.mainservice.course.grade.service.internal.Grade;
 import org.example.mainservice.course.promotion.service.internal.Promotion;
-import org.example.mainservice.course.topic.service.internal.Topic;
 import org.example.mainservice.course.userTopic.service.internal.UserTopic;
 
 import java.time.Instant;
@@ -46,4 +46,10 @@ public class UserProfile {
 
     @OneToMany(mappedBy = "userProfile", fetch = FetchType.LAZY)
     private List<UserTopic> userTopics;
+
+    @OneToMany(mappedBy = "reviewerUserProfile", fetch = FetchType.LAZY)
+    private List<Feedback> givenReviews;
+
+    @OneToMany(mappedBy = "reviewedUserProfile", fetch = FetchType.LAZY)
+    private List<Feedback> receivedReviews;
 }

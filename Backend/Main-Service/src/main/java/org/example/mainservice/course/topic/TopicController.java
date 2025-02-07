@@ -19,8 +19,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/topic")
 @RequiredArgsConstructor
@@ -43,7 +41,7 @@ public class TopicController {
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/{id}")
     public TopicDTO getById(@PathVariable @Min(value = 1) Long id) {
-        return topicMapper.toDTO(topicService.getTopicById(id));
+        return topicMapper.toDTO(topicService.findById(id));
     }
 
 

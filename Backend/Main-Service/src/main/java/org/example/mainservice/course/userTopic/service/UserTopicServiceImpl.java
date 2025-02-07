@@ -5,15 +5,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.example.mainservice.course.grade.service.internal.Grade;
-import org.example.mainservice.course.grade.service.internal.GradeRepository;
-import org.example.mainservice.course.promotion.PromotionController;
-import org.example.mainservice.course.promotion.service.PromotionServiceImpl;
 import org.example.mainservice.course.promotion.service.internal.Promotion;
 import org.example.mainservice.course.promotion.service.internal.PromotionRepository;
+import org.example.mainservice.course.topic.service.TopicService;
 import org.example.mainservice.course.topic.service.internal.Topic;
-import org.example.mainservice.course.topic.service.internal.TopicRepository;
+import org.example.mainservice.course.userProfile.service.UserProfileService;
 import org.example.mainservice.course.userProfile.service.internal.UserProfile;
-import org.example.mainservice.course.userProfile.service.internal.UserProfileRepository;
 import org.example.mainservice.course.userTopic.service.internal.TopicStatus;
 import org.example.mainservice.course.userTopic.service.internal.UserTopic;
 import org.example.mainservice.course.userTopic.service.internal.UserTopicRepository;
@@ -35,9 +32,9 @@ import java.util.UUID;
 public class UserTopicServiceImpl implements UserTopicService {
 
     private final UserTopicRepository userTopicRepository;
-    private final UserProfileRepository userProfileRepository;
-    private final PromotionRepository promotionRepository;
-    private final TopicRepository topicRepository;
+    private final UserProfileService userProfileService;
+    private final PromotionRepository promotionRepository; //Иначе получается циклическая зависимость
+    private final TopicService topicService;
 
 
     @Override
@@ -54,18 +51,18 @@ public class UserTopicServiceImpl implements UserTopicService {
     @Override
     public void update(UserTopic userTopic) throws BadRequestException {
         log.info("Update user with id = {}", userTopic.getId());
-        UserTopic userTopicValue = findUserTopicById(userTopic.getId());
+        UserTopic userTopicValue = findById(userTopic.getId());
 
         userTopicValue.setTopicStatus(userTopic.getTopicStatus());
         userTopicValue.setUpdatedAt(Instant.now());
-        userTopicValue.setUserProfile(findUserProfileById(userTopic.getUserProfile().getId()));
+        userTopicValue.setUserProfile(userProfileService.findById(userTopic.getUserProfile().getId()));
         userTopicValue.setCommitLink(userTopic.getCommitLink());
 
         Promotion promotion = findPromotionById(userTopic.getPromotion().getId());
         isPromotionCorrect(promotion, userTopic.getUserProfile().getId());
         userTopicValue.setPromotion(promotion);
 
-        Topic topic = findTopicById(userTopic.getTopic().getId());
+        Topic topic = topicService.findById(userTopic.getTopic().getId());
         isTopicCorrect(promotion, topic);
         userTopicValue.setTopic(topic);
 
@@ -75,7 +72,7 @@ public class UserTopicServiceImpl implements UserTopicService {
     @Override
     public void updateMy(UserTopic userTopic, UUID userID) {
         log.info("Update userTopic with id = {}", userTopic.getId());
-        UserTopic userTopicValue = findUserTopicById(userTopic.getId());
+        UserTopic userTopicValue = findById(userTopic.getId());
 
         if (!userTopicValue.getUserProfile().getId().equals(userID))
             throw new AccessDeniedException("Вы пытаетесь изменить данные, которые вам не принадлежат!");
@@ -107,27 +104,29 @@ public class UserTopicServiceImpl implements UserTopicService {
     }
 
     @Override
-    public UserTopic getById(Long id) {
-        return findUserTopicById(id);
+    public UserTopic findById(Long id) {
+        return userTopicRepository.findById(id).orElseThrow(() ->
+                new ResourceNotFoundException("UserTopic with id =  %s not found".formatted(id))
+        );
     }
 
     @Override
     public List<UserTopic> getAllUserTopicByUserId(UUID id) {
-        UserProfile userProfile = findUserProfileById(id);
+        UserProfile userProfile = userProfileService.findById(id);
         return userProfile.getUserTopics();
     }
 
     @Override
     public void setUserTopic(UUID userId, long userTopicId) {
-        UserProfile userProfile = findUserProfileById(userId);
-        UserTopic userTopic = findUserTopicById(userTopicId);
+        UserProfile userProfile = userProfileService.findById(userId);
+        UserTopic userTopic = findById(userTopicId);
         userProfile.getUserTopics().add(userTopic);
-        userProfileRepository.save(userProfile);
+        userProfileService.update(userProfile);
     }
 
     @Override
     public void setUserTopicStatus(long userTopicId, TopicStatus topicStatus) {
-        UserTopic userTopic = findUserTopicById(userTopicId);
+        UserTopic userTopic = findById(userTopicId);
         userTopic.setTopicStatus(topicStatus);
         userTopicRepository.save(userTopic);
     }
@@ -141,27 +140,9 @@ public class UserTopicServiceImpl implements UserTopicService {
     }
 
 
-    private UserTopic findUserTopicById(Long id) {
-        return userTopicRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("UserTopic with id =  %s not found".formatted(id))
-        );
-    }
-
     private Promotion findPromotionById(Long id) {
         return promotionRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("Promotion with id =  %s not found".formatted(id))
-        );
-    }
-
-    private UserProfile findUserProfileById(UUID id) {
-        return userProfileRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("UserProfile with id =  %s not found".formatted(id))
-        );
-    }
-
-    private Topic findTopicById(Long id) {
-        return topicRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("Topic with id =  %s not found".formatted(id))
         );
     }
 }
