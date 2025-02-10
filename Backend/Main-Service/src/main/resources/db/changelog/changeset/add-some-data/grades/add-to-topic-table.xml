@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+
+    <changeSet id="add-to-topic-table" author="A192747" runOnChange="true">
+        <sql>
+            INSERT INTO topic (name) VALUES
+                 ('Знает основные структуры данных: примитивы, object, array, Map, Set и их основные методы '),
+                 ('Правильно обращается с числами (целые, дробные, округления), знает для чего существует Number.MAX_SAFE_INTEGER'),
+                 ('Исключения: обработка ошибок'),
+                 ('Применяет promises и async/await для решения асинхронных задач'),
+                 ('Уверенно пользуется типами, интерфейсами и классами, может рассказать как работает наследование в js'),
+                 ('Знает структуры данных: symbol, WeakMap, WeakSet'),
+                 ('Может объяснить работу Event Loop'),
+                 ('TS: Generics'),
+                 ('Знает всё на свете');
+        </sql>
+    </changeSet>
+</databaseChangeLog>

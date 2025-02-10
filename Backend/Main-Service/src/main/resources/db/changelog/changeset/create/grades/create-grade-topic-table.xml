@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+
+    <changeSet id="create-grade_topic-table" author="A192747" runOnChange="true">
+        <sql>
+            create table if not exists grade_topic (
+                grade_id BIGINT references grade(id) on delete cascade on update cascade not null,
+                topic_id BIGINT references topic(id) on delete cascade on update cascade not null
+            );
+        </sql>
+    </changeSet>
+</databaseChangeLog>

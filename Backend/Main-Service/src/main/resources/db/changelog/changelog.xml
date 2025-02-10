@@ -4,6 +4,39 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <include file="db/changelog/changeset/create-test-table.xml"/>
+<!--CREATE TABLES-->
+<!--    GRADES-->
+    <include file="/db/changelog/changeset/create/grades/create-grade-table.xml"/>
+    <include file="/db/changelog/changeset/create/grades/create-topic-table.xml"/>
+    <include file="/db/changelog/changeset/create/grades/create-grade-topic-table.xml"/>
 
+<!--    USERS INFO-->
+    <include file="/db/changelog/changeset/create/user-data/create-user-profile-table.xml"/>
+    <include file="/db/changelog/changeset/create/create-promotion-table.xml"/>
+    <include file="/db/changelog/changeset/create/user-data/create-user-topic-table.xml"/>
+
+<!--    FEEDBACK-->
+    <include file="/db/changelog/changeset/create/create-schedule-table.xml"/>
+    <include file="/db/changelog/changeset/create/create-feedback-table.xml"/>
+
+<!--    EVENTS-->
+    <include file="/db/changelog/changeset/create/events/create-event-table.xml"/>
+    <include file="/db/changelog/changeset/create/events/mail/create-mail-template-table.xml"/>
+    <include file="/db/changelog/changeset/create/events/mail/create-mail-table.xml"/>
+
+
+
+<!--    ADD DATA-->
+<!--    GRADES-->
+    <include file="/db/changelog/changeset/add-some-data/grades/add-to-grade-table.xml"/>
+    <include file="/db/changelog/changeset/add-some-data/grades/add-to-topic-table.xml"/>
+    <include file="/db/changelog/changeset/add-some-data/grades/add-to-grade-topic-table.xml"/>
+
+<!--    USERS-->
+    <include file="/db/changelog/changeset/add-some-data/user-data/add-to-user-profile-table.xml"/>
+    <include file="/db/changelog/changeset/add-some-data/add-to-promotion-table.xml"/>
+
+<!--    FEEDBACK-->
+    <include file="/db/changelog/changeset/add-some-data/add-to-feedback-table.xml"/>
+    <include file="/db/changelog/changeset/add-some-data/add-to-schedule-table.xml"/>
 </databaseChangeLog>

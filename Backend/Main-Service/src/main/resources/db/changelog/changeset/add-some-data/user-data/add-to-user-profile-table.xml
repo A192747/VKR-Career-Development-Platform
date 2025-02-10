@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+
+    <changeSet id="add-to-user-profile-table" author="A192747" runOnChange="true">
+        <sql>
+                insert into user_profile(id, first_name, last_name, email, date_of_birth, current_grade_id)
+                values
+                    ('fc248b6b-e011-4e15-9b50-106ee0e3847e', 'User-first-name', 'User-last-name', 'some-email@mail.ru', '2025-01-27 14:00:00',1),
+                    ('fc248b6b-e011-4e15-9b50-106ee0e3848e', 'Admin-first-name', 'Admin-last-name', 'some-admin-email@mail.ru', '2024-01-27 14:00:00',2);
+
+        </sql>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+
+    <changeSet id="create-user-feedback-table" author="A192747" runOnChange="true">
+        <sql>
+            insert into user_topic (commit_link, updated_at, topic_status, user_id, topic_id, promotion_id)
+            values
+                ('https://github-url', '2024-01-27 14:00:00', 'NOT_STARTED', 1, 5, 1),
+                ('https://github-url', '2024-01-27 14:00:00', 'NOT_STARTED', 1, 6, 1);
+        </sql>
+    </changeSet>
+</databaseChangeLog>

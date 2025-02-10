@@ -46,6 +46,10 @@ logging:
         security: ${startup.mode}
 
 
+sorting:
+  field: name
+
+
 
 
 
