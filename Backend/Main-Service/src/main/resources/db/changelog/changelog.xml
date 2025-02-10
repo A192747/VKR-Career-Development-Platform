@@ -32,7 +32,11 @@
     <include file="/db/changelog/changeset/add-some-data/grades/add-to-topic-table.xml"/>
     <include file="/db/changelog/changeset/add-some-data/grades/add-to-grade-topic-table.xml"/>
 
-<!--USERS    -->
+<!--    USERS-->
     <include file="/db/changelog/changeset/add-some-data/user-data/add-to-user-profile-table.xml"/>
     <include file="/db/changelog/changeset/add-some-data/add-to-promotion-table.xml"/>
+
+<!--    FEEDBACK-->
+    <include file="/db/changelog/changeset/add-some-data/add-to-feedback-table.xml"/>
+    <include file="/db/changelog/changeset/add-some-data/add-to-schedule-table.xml"/>
 </databaseChangeLog>

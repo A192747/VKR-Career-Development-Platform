@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+
+    <changeSet id="add-to-feedback-table" author="A192747" runOnChange="true">
+        <sql>
+                insert into feedback (text, reviewer_user_id, reviewed_user_id, confirmed, promotion_id, related_type, related_id, created_at)
+                values ('string',
+                        'fc248b6b-e011-4e15-9b50-106ee0e3848e',
+                        'fc248b6b-e011-4e15-9b50-106ee0e3847e',
+                        true,
+                        1,
+                        'string',
+                        0,
+                        '2025-02-07 13:42:06.891939'
+                       )
+        </sql>
+    </changeSet>
+</databaseChangeLog>

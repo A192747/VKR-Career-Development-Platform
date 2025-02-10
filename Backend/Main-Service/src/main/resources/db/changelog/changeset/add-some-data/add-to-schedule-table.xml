@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+
+    <changeSet id="add-to-schedule-table" author="A192747" runOnChange="true">
+        <sql>
+                insert into schedule(name, time_begin, time_end, comment, ready_status, reviewer_user_id, reviewed_user_id, interview_format, promotion_id)
+                values (
+                        'string',
+                        '2025-02-10 18:15:00.957000',
+                        '2025-02-10 18:15:00.957000',
+                        'string',
+                        false,
+                        'fc248b6b-e011-4e15-9b50-106ee0e3848e',
+                        'fc248b6b-e011-4e15-9b50-106ee0e3847e',
+                        1,
+                        1
+                       )
+        </sql>
+    </changeSet>
+</databaseChangeLog>

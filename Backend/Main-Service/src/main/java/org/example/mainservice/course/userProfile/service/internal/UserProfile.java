@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.example.mainservice.course.feedback.service.internal.Feedback;
 import org.example.mainservice.course.grade.service.internal.Grade;
 import org.example.mainservice.course.promotion.service.internal.Promotion;
+import org.example.mainservice.course.schedule.service.internal.Schedule;
 import org.example.mainservice.course.userTopic.service.internal.UserTopic;
 
 import java.time.Instant;
@@ -52,4 +53,10 @@ public class UserProfile {
 
     @OneToMany(mappedBy = "reviewedUserProfile", fetch = FetchType.LAZY)
     private List<Feedback> receivedReviews;
+
+    @OneToMany(mappedBy = "reviewerUserProfile", fetch = FetchType.LAZY)
+    private List<Schedule> scheduleGivenReviews;
+
+    @OneToMany(mappedBy = "reviewedUserProfile", fetch = FetchType.LAZY)
+    private List<Schedule> scheduleReceivedReviews;
 }
