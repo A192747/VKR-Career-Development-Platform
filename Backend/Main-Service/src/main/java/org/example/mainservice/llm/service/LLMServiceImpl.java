@@ -59,7 +59,7 @@ public class LLMServiceImpl implements LLMService {
 
     private void isEvaluateDTOCorrect(EvaluateDTO evaluateDTO) throws NoSuchAlgorithmException, BadRequestException {
         if(!hashService.hash(evaluateDTO.getAnswer().getReferenceAnswer()).equals(evaluateDTO.getAnswer().getHash()))
-            throw new BadRequestException("Вы подменили вы подменили ответ!");
+            throw new BadRequestException("Вы подменили ответ!");
     }
 
     @Override

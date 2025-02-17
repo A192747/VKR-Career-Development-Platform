@@ -77,14 +77,14 @@ class Application:
 
     def __init__(self):
 
-        # Set environment variables (this can also be done in your terminal or command line)
-        os.environ["OLLAMA_API_BASE"] = "http://host.docker.internal:11434"
-        os.environ["LLM"] = "ollama/llama3.1:8b"
+        # Устанавливаем значения по умолчанию
+        default_api_base = "http://host.docker.internal:11434"
+        default_llm_model = "ollama/llama3.1:8b"
 
-        llm_model = os.environ.get("LLM")
-        ollama_api_base = os.environ.get("OLLAMA_API_BASE")
+        # Получаем значения переменных окружения или используем значения по умолчанию
+        ollama_api_base = os.environ.get("OLLAMA_API_BASE", default_api_base)
+        llm_model = os.environ.get("LLM", default_llm_model)
 
-        # Use the retrieved values to initialize your LLM
         self.llm = LLM(
             path=llm_model,
             api_base=ollama_api_base,
