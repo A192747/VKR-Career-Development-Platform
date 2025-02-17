@@ -10,7 +10,8 @@
         <sql>
                 create table if not exists mail_template(
                     id BIGSERIAL PRIMARY KEY,
-                    name varchar not null,
+                    name varchar unique not null,
+                    subject varchar (255) unique not null,
                     template varchar not null
                 );
         </sql>

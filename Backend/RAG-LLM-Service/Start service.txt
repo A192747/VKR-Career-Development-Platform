@@ -1,5 +1,0 @@
-docker run -d --gpus=all -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama
-(в контейнере) ollama run llama3.1:8b-instruct-q4_K_M
-docker run -d --gpus=all -it -p 8501:8501 --add-host=host.docker.internal:host-gateway \
--e LLM=ollama/llama3.1:8b-instruct-q4_K_M -e OLLAMA_API_BASE=http://host.docker.internal:11434 \
-neuml/rag

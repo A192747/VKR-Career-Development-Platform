@@ -22,7 +22,9 @@
 <!--    EVENTS-->
     <include file="/db/changelog/changeset/create/events/create-event-table.xml"/>
     <include file="/db/changelog/changeset/create/events/mail/create-mail-template-table.xml"/>
-    <include file="/db/changelog/changeset/create/events/mail/create-mail-table.xml"/>
+    <include file="/db/changelog/changeset/create/events/mail/create-mail-message-table.xml"/>
+
+<!--    MAIL-->
 
 
 

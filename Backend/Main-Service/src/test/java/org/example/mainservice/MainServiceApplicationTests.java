@@ -18,4 +18,12 @@ class MainServiceApplicationTests {
 				.writeIndividualModulesAsPlantUml();
 	}
 
+	@Test
+	void createModuleDocumentation() {
+		ApplicationModules modules = ApplicationModules.of(MainServiceApplication.class);
+		new Documenter(modules)
+				.writeDocumentation()
+				.writeIndividualModulesAsPlantUml();
+	}
+
 }

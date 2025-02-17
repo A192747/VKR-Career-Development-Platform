@@ -1,4 +1,4 @@
-package org.example.mainservice.openApi.config;
+package org.example.mainservice.config.openApi;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;

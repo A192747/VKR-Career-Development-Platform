@@ -111,6 +111,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: backend_password
       ISSUER_URL: http://keycloak_web/realms/my_realm
       JWK_SET_URL: http://keycloak_web:8080/realms/my_realm
+      RAG_SERVICE_URL: http://llm-app:8000
     depends_on:
       - backend_postgres
       - keycloak_web
@@ -135,6 +136,40 @@ services:
     restart: unless-stopped
     command: tunnel --url http://nginx:8181
 
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    volumes:
+      - ollama:/root/.ollama  # Corrected volume name
+      - ./cfg/ollama/entrypoint.sh:/entrypoint.sh
+    # ports:
+    #   - "11434:11434"
+    restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            capabilities: ["gpu"]
+            count: all
+    tty: true
+    entrypoint: ["/usr/bin/bash", "/entrypoint.sh"]
+
+
+  llm-app:
+    build:
+      context: ../Backend/RAG-LLM-Service
+      dockerfile: Dockerfile
+    environment:
+      OLLAMA_API_BASE: http://ollama:11434
+      LLM: ollama/llama3.1:8b
+    # ports:
+    #   - "8000:8000"
+    depends_on:
+      - backend_postgres
+      - kafka1
+
 volumes:
+  ollama:
   postgres_data:
   backend_postgres_data:

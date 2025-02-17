@@ -12,7 +12,7 @@
                     id UUID PRIMARY KEY,
                     created_at TIMESTAMP not null,
                     dispatch_at TIMESTAMP not null,
-                    body JSONB not null,
+                    body varchar not null,
                     status varchar not null
                 );
         </sql>
