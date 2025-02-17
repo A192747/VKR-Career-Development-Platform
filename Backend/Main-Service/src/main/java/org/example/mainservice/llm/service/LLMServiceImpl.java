@@ -4,7 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
-import org.example.mainservice.course.topic.service.TopicService;
+import org.example.mainservice.course.TopicFacade;
 import org.example.mainservice.llm.service.frontendDto.AnswerDTO;
 import org.example.mainservice.llm.service.frontendDto.EvaluateDTO;
 import org.example.mainservice.llm.service.frontendDto.QuestionDTO;
@@ -23,7 +23,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -33,7 +32,7 @@ import java.util.Objects;
 @Transactional
 public class LLMServiceImpl implements LLMService {
     private final RestTemplate restTemplate;
-    private final TopicService topicService;
+    private final TopicFacade topicFacade;
     private final HashService hashService;
     @Value("${llm.uri}")
     private String serviceAddress;
@@ -67,7 +66,7 @@ public class LLMServiceImpl implements LLMService {
     public List<QuestionDTO> getQuestions(TopicsDTO topicsDTO) throws NoSuchAlgorithmException {
         TopicsLLMDTO topicsLLMDTO = new TopicsLLMDTO();
         List<String> topics = topicsDTO.getTopicsIds().stream()
-                .map(id -> topicService.findById(id).getName())
+                .map(topicFacade::getTopicName)
                 .toList();
 
         topicsLLMDTO.setTopics(topics);

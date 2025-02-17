@@ -25,9 +25,6 @@
 * Локально http://localhost:8181/swagger-ui/index.html
 * Удаленно https://${cloudflared-url}/swagger-ui/index.html
 
-### Архитектура проекта
-![Screenshot](https://github.com/A192747/VKR-Career-Development-Platform/blob/develop/Info/images/architecture.jpg)
-
 ### Логин пользователя
 ``` http request
 POST /auth HTTP/1.1
@@ -50,3 +47,9 @@ Content-Type: application/x-www-form-urlencoded
 
 grant_type=refresh_token&client_id=my_client&refresh_token=${refresh_token}
 ```
+
+### Архитектура проекта
+![Screenshot](https://github.com/A192747/VKR-Career-Development-Platform/blob/develop/Info/images/architecture.jpg)
+
+### Модули основного сервиса (монолита)
+![Screenshot](https://github.com/A192747/VKR-Career-Development-Platform/blob/develop/Info/images/modules.jpg)
