@@ -6,26 +6,19 @@
 
 После добавления необходимых файлов в дальнейшем для запуска достаточно просто выполнять данную команду:
 ```bash
-./start.sh
+./app.sh
 ```
 После выполнения команды по умолчанию запускается Cloudflared Tunnel, в консоли выведется https ссылка (далее cloudflared-url) для доступа к api через интернет. 
 
-## Для разработки (postgres, kafka, zoo, keycloak и Ollama)
+## Для разработки (postgres, kafka, zoo, keycloak и ollama)
 ```bash
-./start.sh -dev
+./app.sh -dev
 ```
 
-## Для остановки всех докер контейнеров (не удаляя Ollama)
+## Для остановки всех докер контейнеров 
 Если вы хотите завершить работу контейнеров, но при этом не хотите ожидать длительной загрузки Ollama при следующем запуске, то достаточно выполнить следующую команду:
 ```bash
-./start.sh -down
-```
-
-## Для остановки всех докер контейнеров
-> [!WARNING]
-> После выполнения данной команды будут отчищены почти все образы! Данная команда необходима, если нужно пересобрать все контейнеры.
-```bash
-./start.sh -down-all
+./app.sh -down
 ```
 
 ### Документация к api находится по адресу: </br>
@@ -47,4 +40,13 @@ grant_type=password&client_id=my_client&username=useruser&password=userpassword
 Далее при каждом запросе отправляем в header запроса
 ```http request
 Authorization: Bearer eyJhbGciOi...UIiwia2lk
+```
+
+### Обновление refresh_token пользователя
+``` http request
+POST /auth HTTP/1.1
+Host: ${cloudflared-url:localhost:8181}
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=refresh_token&client_id=my_client&refresh_token=${refresh_token}
 ```

@@ -1,6 +1,7 @@
 package org.example.mainservice.exception;
 
 import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.UnexpectedTypeException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.apache.logging.log4j.util.InternalException;
@@ -67,7 +68,7 @@ public class GlobalExceptionHandler {
 
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(BadRequestException.class)
+    @ExceptionHandler({BadRequestException.class, UnexpectedTypeException.class})
     public ExceptionResponse handleBadRequestException(Exception exception) {
         return createResponse(exception);
     }

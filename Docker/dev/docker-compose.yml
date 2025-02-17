@@ -88,6 +88,26 @@ services:
     ports:
       - "5432:5432"
 
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    volumes:
+      - ollama:/root/.ollama  # Corrected volume name
+      - ../cfg/ollama/entrypoint.sh:/entrypoint.sh
+    ports:
+      - "11434:11434"
+    restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            capabilities: ["gpu"]
+            count: all
+    tty: true
+    entrypoint: ["/usr/bin/bash", "/entrypoint.sh"]
+
 volumes:
+  ollama:
   postgres_data:
   backend_postgres_data:

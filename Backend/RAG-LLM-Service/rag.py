@@ -31,6 +31,10 @@ app = FastAPI()
 class QuestionRequest(BaseModel):
     question: str
 
+class EvaluateRequest(BaseModel):
+    reference_answer: str
+    user_answer: str
+
 class TopicRequest(BaseModel):
     topics: list[str]
     num_questions: int
@@ -206,26 +210,43 @@ class Application:
                                  )
         return questions
 
-    @app.get("/answer")
+    def evaluate(self, reference_answer, user_answer):
+        prompt = f"""
+                Вы опытный оценщик. Ваша задача - сравнить ответ пользователя с эталонным ответом
+                и определить, насколько ответ пользователя похож на эталонный ответ.
+            
+                Эталонный ответ: {reference_answer}
+            
+                Ответ пользователя: {user_answer}
+            
+                Определите ключевые компоненты или точки, которые присутствуют в эталонном ответе, но отсутствуют в ответе пользователя.
+                Предоставьте только краткое резюме того, что в ответе правильно и чего не хватает. 
+                **Не повторяйте вопросы и не включайте дополнительные объяснения.**
+                """
+
+        return app_instance.llm(prompt)
+
+    @app.post("/answer")
     async def ask_question(request: QuestionRequest):
         try:
             response = app_instance.run_query(request.question)
-            return {"response": response}
+            return response
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
-    @app.get("/questions")
+    @app.post("/questions")
     async def generate_questions(request: TopicRequest):
         try:
             questions = app_instance.generate_questions_by_topics(request.topics, request.num_questions)
-            return {"questions": questions}
+            return questions
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
-    @app.get("/compare")
-    async def compare_answers(request: TopicRequest):
+    @app.post("/evaluate")
+    async def evaluate_answers(request: EvaluateRequest):
         try:
-            return {"result": "need to add"}
+            result = app_instance.evaluate(request.reference_answer, request.user_answer)
+            return result
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
