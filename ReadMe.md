@@ -15,8 +15,7 @@
 ./app.sh -dev
 ```
 
-## Для остановки всех докер контейнеров 
-Если вы хотите завершить работу контейнеров, но при этом не хотите ожидать длительной загрузки Ollama при следующем запуске, то достаточно выполнить следующую команду:
+## Для остановки всех докер контейнеров
 ```bash
 ./app.sh -down
 ```
@@ -31,7 +30,7 @@ POST /auth HTTP/1.1
 Host: ${cloudflared-url:localhost:8181}
 Content-Type: application/x-www-form-urlencoded
 
-grant_type=password&client_id=my_client&username=useruser&password=userpassword
+grant_type=password&client_id=my_client&username=${useruser}&password=${userpassword}
 ```
 
 Далее при каждом запросе отправляем в header запроса
@@ -53,3 +52,6 @@ grant_type=refresh_token&client_id=my_client&refresh_token=${refresh_token}
 
 ### Модули основного сервиса (монолита)
 ![Screenshot](https://github.com/A192747/VKR-Career-Development-Platform/blob/develop/Info/images/modules.png)
+
+### Процесс интервью
+![Screenshot](https://github.com/A192747/VKR-Career-Development-Platform/blob/develop/Info/images/interview-process.jpg)
