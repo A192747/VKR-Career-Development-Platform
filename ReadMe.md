@@ -48,8 +48,8 @@ Content-Type: application/x-www-form-urlencoded
 grant_type=refresh_token&client_id=my_client&refresh_token=${refresh_token}
 ```
 
-### Архитектура проекта
+## Архитектура проекта
 ![Screenshot](https://github.com/A192747/VKR-Career-Development-Platform/blob/develop/Info/images/architecture.jpg)
 
 ### Модули основного сервиса (монолита)
-![Screenshot](https://github.com/A192747/VKR-Career-Development-Platform/blob/develop/Info/images/modules.jpg)
+![Screenshot](https://github.com/A192747/VKR-Career-Development-Platform/blob/develop/Info/images/modules.png)
