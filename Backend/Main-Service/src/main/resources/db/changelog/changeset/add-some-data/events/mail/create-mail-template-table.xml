@@ -6,14 +6,12 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
 
-    <changeSet id="create-event-table" author="A192747" runOnChange="true">
+    <changeSet id="create-mail-template-table" author="A192747" runOnChange="true">
         <sql>
-                create table if not exists event(
-                    id UUID PRIMARY KEY,
-                    created_at TIMESTAMP not null,
-                    dispatch_at TIMESTAMP not null,
-                    body JSONB not null,
-                    status varchar not null
+                create table if not exists mail_template(
+                    id BIGSERIAL PRIMARY KEY,
+                    name varchar not null,
+                    template varchar not null
                 );
         </sql>
     </changeSet>
