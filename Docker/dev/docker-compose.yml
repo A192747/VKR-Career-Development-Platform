@@ -89,7 +89,7 @@ services:
       - "5432:5432"
 
   ollama:
-    image: ollama/ollama
+    image: ollama/ollama:0.5.11
     container_name: ollama
     volumes:
       - ollama:/root/.ollama  # Corrected volume name
@@ -105,7 +105,7 @@ services:
             capabilities: ["gpu"]
             count: all
     tty: true
-    entrypoint: ["/usr/bin/bash", "/entrypoint.sh"]
+    entrypoint: ["/usr/bin/sh", "/entrypoint.sh"]
 
 volumes:
   ollama:

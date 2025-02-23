@@ -1,5 +1,6 @@
 package org.example.mainservice.course.feedback;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -95,7 +96,7 @@ public class FeedbackController {
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('USER')")
     @PostMapping
-    public long save(@RequestBody FeedbackCreateDTO topicDTO) throws BadRequestException {
+    public long save(@RequestBody FeedbackCreateDTO topicDTO) throws BadRequestException, JsonProcessingException {
         log.info("Feedback value {}", topicDTO);
         return feedbackService.save(feedbackMapper.toEntity(topicDTO));
     }

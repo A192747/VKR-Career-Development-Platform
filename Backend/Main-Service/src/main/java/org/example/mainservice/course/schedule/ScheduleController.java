@@ -1,5 +1,6 @@
 package org.example.mainservice.course.schedule;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -78,10 +79,26 @@ public class ScheduleController {
     @GetMapping("/my")
     public List<ScheduleDTO> getMySchedulesPage() {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return scheduleService.getAllFeedbacksByUserId(UUID.fromString(authentication.getName()))
+        return scheduleService.getAllScheduleByUserId(UUID.fromString(authentication.getName()))
                 .stream()
                 .map(scheduleMapper::toDTO)
                 .toList();
+    }
+
+    @Operation(summary = "Approve schedule event",
+            description = "You can approve schedule event.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Page successfully got",
+                    content = @Content(mediaType = "application/json")),
+    })
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('USER')")
+    @PostMapping("/approve")
+    public void approve(@RequestParam(name = "scheduleId") @Min(value = 0) Long id,
+                        @RequestParam(name = "approved") Boolean approved) throws JsonProcessingException, BadRequestException {
+        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        scheduleService.approve(id, UUID.fromString(authentication.getName()), approved);
     }
 
 
@@ -95,7 +112,7 @@ public class ScheduleController {
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('USER')")
     @PostMapping
-    public long save(@RequestBody ScheduleCreateDTO topicDTO) throws BadRequestException {
+    public long save(@RequestBody ScheduleCreateDTO topicDTO) throws BadRequestException, JsonProcessingException {
         return scheduleService.save(scheduleMapper.toEntity(topicDTO));
     }
 

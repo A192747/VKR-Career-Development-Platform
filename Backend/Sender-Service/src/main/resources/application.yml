@@ -31,5 +31,5 @@ database:
     schedule: "0 0/1 * * * *"
 
 email-templates:
-  path: classpath:/templates/*.yml
+
 
