@@ -6,7 +6,7 @@ spring:
     name: Sender-Service
 
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${KAFKA_URL:http://localhost:9092}
     topics:
       mailing: mailTopic
     consumer:
@@ -30,6 +30,9 @@ database:
   observer:
     schedule: "0 0/1 * * * *"
 
-email-templates:
+io:
+  reflectoring:
+    kafka:
+      bootstrap-servers: ${KAFKA_URL:http://localhost:9092}
 
 

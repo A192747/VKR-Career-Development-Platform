@@ -11,11 +11,10 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-@Service
 public interface FormMessageService {
 
-
     MailMessage formMessage(Map<String, String> args);
+
     default TemplateType getTemplateName() {
         TemplateHandler annotation = this.getClass().getAnnotation(TemplateHandler.class);
         if (annotation != null) {
