@@ -38,6 +38,7 @@ public class Schedule {
     private Promotion promotion;
 
     @Column(name = "interview_format", nullable = false)
+    @Enumerated(EnumType.STRING)
     private InterviewFormat interviewFormat;
 
     @Column(name = "comment", nullable = false)

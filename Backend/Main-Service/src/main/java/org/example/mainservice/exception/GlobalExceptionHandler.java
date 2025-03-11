@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler {
     @ResponseBody
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler({IOException.class, InternalException.class, InvalidKeyException.class, NoSuchAlgorithmException.class, IllegalArgumentException.class})
+    @ExceptionHandler({TemplateAnnotationException.class, IOException.class, InternalException.class, InvalidKeyException.class, NoSuchAlgorithmException.class, IllegalArgumentException.class})
     public ExceptionResponse handleServerExceptions(Exception exception) {
         return createResponse(exception);
     }

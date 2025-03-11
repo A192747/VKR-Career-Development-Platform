@@ -2,7 +2,7 @@ package org.example.senderservice.config;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.example.senderservice.model.EmailMessage;
+import org.example.senderservice.mail.KafkaMailMessage;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,10 +24,10 @@ public class KafkaConsumerConfig {
     private String bootstrapServers;
 
     @Bean
-    public ConsumerFactory<String, EmailMessage> consumerFactory() {
+    public ConsumerFactory<String, KafkaMailMessage> consumerFactory() {
         Map<String, Object> props = new HashMap<>();
 
-        JsonDeserializer<EmailMessage> deserializer = new JsonDeserializer<>(EmailMessage.class);
+        JsonDeserializer<KafkaMailMessage> deserializer = new JsonDeserializer<>(KafkaMailMessage.class);
         deserializer.setRemoveTypeHeaders(false);
         deserializer.addTrustedPackages("*");
         deserializer.setUseTypeMapperForKey(true);
@@ -42,8 +42,8 @@ public class KafkaConsumerConfig {
 
 
     @Bean
-    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, EmailMessage>> kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, EmailMessage> factory = new ConcurrentKafkaListenerContainerFactory<>();
+    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, KafkaMailMessage>> kafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, KafkaMailMessage> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
         factory.setConsumerFactory(consumerFactory());
         return factory;

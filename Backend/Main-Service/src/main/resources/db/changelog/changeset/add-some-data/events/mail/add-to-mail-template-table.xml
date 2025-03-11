@@ -1,0 +1,520 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+
+    <changeSet id="add-to-mail-template-table" author="A192747" runOnChange="true">
+        <sql>
+            <![CDATA[
+                insert into mail_template (name, title, body)
+                values ('FEEDBACK_CAME', 'У вас появился новый отзыв!',
+                        '<!DOCTYPE html>
+                            <html lang="en">
+                            <head>
+                                <meta charset="UTF-8">
+                                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                                <title>Новый отзыв</title>
+                                <style>
+                                    body {
+                                        font-family: Arial, sans-serif;
+                                        background-color: #f4f4f4;
+                                        margin: 0;
+                                        padding: 0;
+                                    }
+                                    .email-container {
+                                        max-width: 600px;
+                                        margin: 20px auto;
+                                        background-color: #ffffff;
+                                        border-radius: 8px;
+                                        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                                        overflow: hidden;
+                                    }
+                                    .header {
+                                        background-color: #4CAF50;
+                                        color: #ffffff;
+                                        text-align: center;
+                                        padding: 20px;
+                                    }
+                                    .header h1 {
+                                        margin: 0;
+                                        font-size: 24px;
+                                    }
+                                    .content {
+                                        padding: 20px;
+                                    }
+                                    .content p {
+                                        font-size: 16px;
+                                        line-height: 1.5;
+                                        color: #333333;
+                                    }
+                                    .button-container {
+                                        text-align: center;
+                                        margin-top: 20px;
+                                    }
+                                    .button {
+                                        display: inline-block;
+                                        background-color: #4CAF50;
+                                        color: #ffffff;
+                                        text-decoration: none;
+                                        padding: 10px 20px;
+                                        border-radius: 5px;
+                                        font-size: 16px;
+                                    }
+                                    .button:hover {
+                                        background-color: #45a049;
+                                    }
+                                    .footer {
+                                        text-align: center;
+                                        padding: 10px;
+                                        font-size: 12px;
+                                        color: #777777;
+                                    }
+                                </style>
+                            </head>
+                            <body>
+                                <div class="email-container">
+                                    <!-- Заголовок -->
+                                    <div class="header">
+                                        <h1>Вы получили новый отзыв!</h1>
+                                    </div>
+
+                                    <!-- Основное содержание -->
+                                    <div class="content">
+                                        <p>Здравствуйте, {{name}}!</p>
+
+                                        <p>Мы рады сообщить вам, что вы получили новый отзыв!:</p>
+
+                                        <blockquote style="font-style: italic; color: #555555; margin-left: 20px; border-left: 4px solid #4CAF50; padding-left: 10px;">
+                                            "{{reviewText}}"
+                                        </blockquote>
+
+                                        <p>Этот отзыв был оставлен пользователем <strong>{{reviewerName}}</strong>.</p>
+
+                                        <div class="button-container">
+                                            <a href="{{reviewLink}}" class="button">Посмотреть отзыв</a>
+                                        </div>
+
+                                        <p>Спасибо за вашу работу и вклад в наше сообщество!</p>
+
+                                        <p>С уважением,<br>Платформа профессионального роста сотрудников</p>
+                                    </div>
+
+                                    <!-- Подвал -->
+                                    <div class="footer">
+                                        Это письмо отправлено автоматически. Пожалуйста, не отвечайте на него.
+                                    </div>
+                                </div>
+                            </body>
+                            </html>
+                            ');
+            ]]>
+        </sql>
+    </changeSet>
+
+    <changeSet id="add-to-mail-template-table-MEETING_SOON" author="A192747" runOnChange="true">
+        <sql>
+        <![CDATA[
+                insert into mail_template (name, title, body)
+                    values ('MEETING_SOON', 'У вас скоро собрание!', '<!DOCTYPE html>
+                                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Напоминание о собрании</title>
+                    <style>
+                        body {
+                        font-family: Arial, sans-serif;
+                        background-color: #f4f4f4;
+                        margin: 0;
+                        padding: 0;
+                        }
+                        .email-container {
+                        max-width: 600px;
+                        margin: 20px auto;
+                        background-color: #ffffff;
+                        border-radius: 8px;
+                        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                        overflow: hidden;
+                        }
+                        .header {
+                        background-color: #007BFF;
+                        color: #ffffff;
+                        text-align: center;
+                        padding: 20px;
+                        }
+                        .header h1 {
+                        margin: 0;
+                        font-size: 24px;
+                        }
+                        .content {
+                        padding: 20px;
+                        }
+                        .content p {
+                        font-size: 16px;
+                        line-height: 1.5;
+                        color: #333333;
+                        }
+                        .button-container {
+                        text-align: center;
+                        margin-top: 20px;
+                        }
+                        .button {
+                        display: inline-block;
+                        background-color: #007BFF;
+                        color: #ffffff;
+                        text-decoration: none;
+                        padding: 10px 20px;
+                        border-radius: 5px;
+                        font-size: 16px;
+                        }
+                        .button:hover {
+                        background-color: #0056b3;
+                        }
+                        .footer {
+                        text-align: center;
+                        padding: 10px;
+                        font-size: 12px;
+                        color: #777777;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="email-container">
+                        <!-- Заголовок -->
+                        <div class="header">
+                            <h1>Напоминание о собрании</h1>
+                        </div>
+
+                        <!-- Основное содержание -->
+                        <div class="content">
+                            <p>Здравствуйте, {{name}}!</p>
+
+                            <p>Это напоминание о том, что у вас скоро запланировано собрание:</p>
+
+                            <p><strong>Дата и время:</strong> {{meetingDateTime}}</p>
+
+                            <p><strong>Тема:</strong> {{meetingSubject}}</p>
+
+                            <p><strong>Формат проведения:</strong> {{meetingLocation}}</p>
+
+                            <p>С уважением,<br>Платформа профессионального роста сотрудников</p>
+                        </div>
+
+                        <!-- Подвал -->
+                        <div class="footer">
+                            Это письмо отправлено автоматически. Пожалуйста, не отвечайте на него.
+                        </div>
+                    </div>
+                </body>
+            </html>
+            ')
+            ]]>
+        </sql>
+    </changeSet>
+
+    <changeSet id="add-to-mail-template-table-NEW_MEETING_ADDED" author="A192747" runOnChange="true">
+        <sql>
+        <![CDATA[
+            insert into mail_template (name, title, body)
+            values ('NEW_MEETING_ADDED', 'У вас добавлено новое событие в календаре', '<!DOCTYPE html>
+                                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Напоминание о собрании</title>
+                    <style>
+                        body {
+                        font-family: Arial, sans-serif;
+                        background-color: #f4f4f4;
+                        margin: 0;
+                        padding: 0;
+                        }
+                        .email-container {
+                        max-width: 600px;
+                        margin: 20px auto;
+                        background-color: #ffffff;
+                        border-radius: 8px;
+                        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                        overflow: hidden;
+                        }
+                        .header {
+                        background-color: #007BFF;
+                        color: #ffffff;
+                        text-align: center;
+                        padding: 20px;
+                        }
+                        .header h1 {
+                        margin: 0;
+                        font-size: 24px;
+                        }
+                        .content {
+                        padding: 20px;
+                        }
+                        .content p {
+                        font-size: 16px;
+                        line-height: 1.5;
+                        color: #333333;
+                        }
+                        .button-container {
+                        text-align: center;
+                        margin-top: 20px;
+                        }
+                        .button {
+                        display: inline-block;
+                        background-color: #007BFF;
+                        color: #ffffff;
+                        text-decoration: none;
+                        padding: 10px 20px;
+                        border-radius: 5px;
+                        font-size: 16px;
+                        }
+                        .button:hover {
+                        background-color: #0056b3;
+                        }
+                        .footer {
+                        text-align: center;
+                        padding: 10px;
+                        font-size: 12px;
+                        color: #777777;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="email-container">
+                        <!-- Заголовок -->
+                        <div class="header">
+                            <h1>Напоминание о собрании</h1>
+                        </div>
+
+                        <!-- Основное содержание -->
+                        <div class="content">
+                            <p>Здравствуйте, {{name}}!</p>
+
+                            <p>Это напоминание о том, что у вас запланировано собрание:</p>
+
+                            <p><strong>Дата и время:</strong> {{meetingDateTime}}</p>
+
+                            <p><strong>Тема:</strong> {{meetingSubject}}</p>
+
+                            <p><strong>Формат проведения:</strong> {{meetingLocation}}</p>
+
+                            <p>С уважением,<br>Платформа профессионального роста сотрудников</p>
+                        </div>
+
+                        <!-- Подвал -->
+                        <div class="footer">
+                            Это письмо отправлено автоматически. Пожалуйста, не отвечайте на него.
+                        </div>
+                    </div>
+                </body>
+            </html>
+            ')
+            ]]>
+        </sql>
+    </changeSet>
+
+    <changeSet id="add-to-mail-template-table-NEED-APPROVE" author="A192747" runOnChange="true">
+        <sql>
+        <![CDATA[
+            insert into mail_template (name, title, body)
+            values ('NEED_APPROVE', 'Необходимо подтвердить запись на событие', '<!DOCTYPE html>
+                                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Подтверждение записи</title>
+                    <style>
+                        body {
+                        font-family: Arial, sans-serif;
+                        background-color: #f4f4f4;
+                        margin: 0;
+                        padding: 0;
+                        }
+                        .email-container {
+                        max-width: 600px;
+                        margin: 20px auto;
+                        background-color: #ffffff;
+                        border-radius: 8px;
+                        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                        overflow: hidden;
+                        }
+                        .header {
+                        background-color: #007BFF;
+                        color: #ffffff;
+                        text-align: center;
+                        padding: 20px;
+                        }
+                        .header h1 {
+                        margin: 0;
+                        font-size: 24px;
+                        }
+                        .content {
+                        padding: 20px;
+                        }
+                        .content p {
+                        font-size: 16px;
+                        line-height: 1.5;
+                        color: #333333;
+                        }
+                        .button-container {
+                        text-align: center;
+                        margin-top: 20px;
+                        }
+                        .button {
+                        display: inline-block;
+                        background-color: #007BFF;
+                        color: #ffffff;
+                        text-decoration: none;
+                        padding: 10px 20px;
+                        border-radius: 5px;
+                        font-size: 16px;
+                        }
+                        .button:hover {
+                        background-color: #0056b3;
+                        }
+                        .footer {
+                        text-align: center;
+                        padding: 10px;
+                        font-size: 12px;
+                        color: #777777;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="email-container">
+                        <!-- Заголовок -->
+                        <div class="header">
+                            <h1>Подтверждение записи</h1>
+                        </div>
+
+                        <!-- Основное содержание -->
+                        <div class="content">
+                            <p>Здравствуйте, {{name}}!</p>
+
+                            <p>Необходимо подтвердить запланированное событие:</p>
+
+                            <p><strong>Дата и время:</strong> {{meetingDateTime}}</p>
+
+                            <p><strong>Тема:</strong> {{meetingSubject}}</p>
+
+                            <p><strong>Формат проведения:</strong> {{meetingLocation}}</p>
+
+                            <p>С уважением,<br>Платформа профессионального роста сотрудников</p>
+                        </div>
+
+                        <!-- Подвал -->
+                        <div class="footer">
+                            Это письмо отправлено автоматически. Пожалуйста, не отвечайте на него.
+                        </div>
+                    </div>
+                </body>
+            </html>
+            ')
+            ]]>
+        </sql>
+    </changeSet>
+
+    <changeSet id="add-to-mail-template-table-MEETING-CANCELED" author="A192747" runOnChange="true">
+        <sql>
+        <![CDATA[
+            insert into mail_template (name, title, body)
+            values ('MEETING_CANCELED', 'Встреча отклонена!', '<!DOCTYPE html>
+                                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Подтверждение записи</title>
+                    <style>
+                        body {
+                        font-family: Arial, sans-serif;
+                        background-color: #f4f4f4;
+                        margin: 0;
+                        padding: 0;
+                        }
+                        .email-container {
+                        max-width: 600px;
+                        margin: 20px auto;
+                        background-color: #ffffff;
+                        border-radius: 8px;
+                        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                        overflow: hidden;
+                        }
+                        .header {
+                        background-color: #007BFF;
+                        color: #ffffff;
+                        text-align: center;
+                        padding: 20px;
+                        }
+                        .header h1 {
+                        margin: 0;
+                        font-size: 24px;
+                        }
+                        .content {
+                        padding: 20px;
+                        }
+                        .content p {
+                        font-size: 16px;
+                        line-height: 1.5;
+                        color: #333333;
+                        }
+                        .button-container {
+                        text-align: center;
+                        margin-top: 20px;
+                        }
+                        .button {
+                        display: inline-block;
+                        background-color: #007BFF;
+                        color: #ffffff;
+                        text-decoration: none;
+                        padding: 10px 20px;
+                        border-radius: 5px;
+                        font-size: 16px;
+                        }
+                        .button:hover {
+                        background-color: #0056b3;
+                        }
+                        .footer {
+                        text-align: center;
+                        padding: 10px;
+                        font-size: 12px;
+                        color: #777777;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="email-container">
+                        <!-- Заголовок -->
+                        <div class="header">
+                            <h1>Встреча отклонена!</h1>
+                        </div>
+
+                        <!-- Основное содержание -->
+                        <div class="content">
+                            <p>Здравствуйте, {{name}}!</p>
+
+                            <h1>К сожалению, встреча была отклонена проверяющим!<h1>
+
+                            <p><strong>Дата и время:</strong> {{meetingDateTime}}</p>
+
+                            <p><strong>Тема:</strong> {{meetingSubject}}</p>
+
+                            <p><strong>Формат проведения:</strong> {{meetingLocation}}</p>
+
+                            <p>С уважением,<br>Платформа профессионального роста сотрудников</p>
+                        </div>
+
+                        <!-- Подвал -->
+                        <div class="footer">
+                            Это письмо отправлено автоматически. Пожалуйста, не отвечайте на него.
+                        </div>
+                    </div>
+                </body>
+            </html>
+            ')
+            ]]>
+        </sql>
+    </changeSet>
+</databaseChangeLog>

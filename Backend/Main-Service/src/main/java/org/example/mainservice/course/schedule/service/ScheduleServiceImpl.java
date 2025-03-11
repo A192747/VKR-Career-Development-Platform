@@ -1,5 +1,6 @@
 package org.example.mainservice.course.schedule.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,13 +11,17 @@ import org.example.mainservice.course.schedule.service.internal.ScheduleReposito
 import org.example.mainservice.course.userProfile.service.UserProfileService;
 import org.example.mainservice.course.userProfile.service.internal.UserProfile;
 import org.example.mainservice.exception.ResourceNotFoundException;
+import org.example.mainservice.mail.DelayedSenderService;
+import org.example.mainservice.mail.TemplateType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -28,10 +33,11 @@ public class ScheduleServiceImpl implements ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final UserProfileService userProfileService;
     private final PromotionService promotionService;
+    private final DelayedSenderService delayedSenderService;
 
 
     @Override
-    public long save(Schedule schedule) throws BadRequestException {
+    public long save(Schedule schedule) throws BadRequestException, JsonProcessingException {
         log.info("Save schedule {}", schedule);
         schedule.setReady(false);
         schedule.setPromotion(promotionService.findById(schedule.getPromotion().getId()));
@@ -43,7 +49,40 @@ public class ScheduleServiceImpl implements ScheduleService {
         isPromotionCorrect(schedule);
         isDateCorrect(schedule);
 
+        sendNeedApproveMessage(schedule.getReviewerUserProfile(), schedule);
+
         return scheduleRepository.save(schedule).getId();
+    }
+
+    private void sendNeedApproveMessage(UserProfile userProfile, Schedule schedule) throws JsonProcessingException {
+        Map<String, String> args = new HashMap<>();
+        args.put("sendTo", userProfile.getEmail());
+        args.put("name", userProfile.getFirstName() + " " + userProfile.getLastName());
+        args.put("meetingDateTime", schedule.getBeginAt().toString());
+        args.put("meetingSubject", schedule.getName());
+        args.put("meetingLocation", schedule.getInterviewFormat().name());
+        delayedSenderService.sendMessage(args, TemplateType.NEED_APPROVE);
+    }
+
+    private void sendNewMeetingAddedMessage(UserProfile userProfile, Schedule schedule) throws JsonProcessingException {
+        Map<String, String> args = new HashMap<>();
+        args.put("sendTo", userProfile.getEmail());
+        args.put("name", userProfile.getFirstName() + " " + userProfile.getLastName());
+        args.put("meetingDateTime", schedule.getBeginAt().toString());
+        args.put("meetingSubject", schedule.getName());
+        args.put("meetingLocation", schedule.getInterviewFormat().name());
+        delayedSenderService.sendMessage(args, TemplateType.NEW_MEETING_ADDED);
+    }
+
+    private void sendMessageWithDelay(UserProfile userProfile, Schedule schedule) throws JsonProcessingException {
+        Map<String, String> args = new HashMap<>();
+        args.put("sendAt", schedule.getBeginAt().toString());
+        args.put("sendTo", userProfile.getEmail());
+        args.put("name", userProfile.getFirstName() + " " + userProfile.getLastName());
+        args.put("meetingDateTime", schedule.getBeginAt().toString());
+        args.put("meetingSubject", schedule.getName());
+        args.put("meetingLocation", schedule.getInterviewFormat().name());
+        delayedSenderService.sendMessage(args, TemplateType.MEETING_SOON);
     }
 
     private void isDateCorrect(Schedule schedule) throws BadRequestException {
@@ -94,6 +133,30 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
+    public void approve(Long scheduleId, UUID appoverId, Boolean approved) throws JsonProcessingException, BadRequestException {
+        Schedule schedule = findById(scheduleId);
+        if (schedule.getReviewerUserProfile().getId().equals(appoverId)) {
+            if (approved) {
+                if(schedule.getBeginAt().isBefore(Instant.now()) && schedule.getFinishedAt().isBefore(Instant.now())) {
+                    scheduleRepository.delete(schedule);
+                    throw new BadRequestException("Вы не можете подтвердить запись на событие, которое уже прошло! Событие будет удалено.");
+                }
+                schedule.setReady(true);
+                sendNewMeetingAddedMessage(schedule.getReviewedUserProfile(), schedule);
+                sendNewMeetingAddedMessage(schedule.getReviewerUserProfile(), schedule);
+
+                sendMessageWithDelay(schedule.getReviewedUserProfile(), schedule);
+                sendMessageWithDelay(schedule.getReviewerUserProfile(), schedule);
+                scheduleRepository.save(schedule);
+            } else {
+                scheduleRepository.delete(schedule);
+            }
+        } else {
+            throw new BadRequestException("Вы пытаетесь подтвердить не свою запись");
+        }
+    }
+
+    @Override
     public Page<Schedule> getAllSchedules(int page, int size, Sort sort) {
         log.info("Get all Schedules");
         PageRequest pageable = PageRequest.of(page, size);
@@ -101,7 +164,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public List<Schedule> getAllFeedbacksByUserId(UUID userId) {
+    public List<Schedule> getAllScheduleByUserId(UUID userId) {
         UserProfile userProfile = userProfileService.findById(userId);
 
         List<Schedule> mySchedule = userProfile.getScheduleGivenReviews();
