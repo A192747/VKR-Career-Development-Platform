@@ -1,5 +1,6 @@
 package org.example.mainservice.mail.service.formers;
 
+import org.example.mainservice.exception.TemplateAnnotationException;
 import org.example.mainservice.mail.service.internal.MailMessage;
 import org.example.mainservice.mail.service.internal.template.MailTemplate;
 import org.example.mainservice.mail.service.internal.template.MailTemplateRepository;
@@ -21,7 +22,7 @@ public interface FormMessageService {
             return annotation.templateName();
         }
         //Аннотация обязательна
-        throw new AnnotationProcessingException("Необходимо указать аннотацию для сервиса");
+        throw new TemplateAnnotationException("Необходимо указать аннотацию для сервиса");
     }
 
     default MailMessage formDefaultMailMessage(Map<String, String> args, MailTemplateRepository mailTemplateRepository) {
