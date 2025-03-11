@@ -3,6 +3,8 @@ package org.example.senderservice.event;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.UUID;
 
 public interface EventService {
@@ -10,5 +12,5 @@ public interface EventService {
     void delete(UUID event);
     Event findById(UUID id);
     Page<Event> findAll(Pageable pageable);
-    Page<Event> findMailingWaitingEvents(Pageable pageable);
+    Page<Event> findMailingWaitingEvents(Pageable pageable, Instant date);
 }

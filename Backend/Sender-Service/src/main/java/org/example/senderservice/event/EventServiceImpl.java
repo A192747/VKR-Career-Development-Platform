@@ -8,6 +8,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -37,7 +41,8 @@ public class EventServiceImpl implements EventService {
         return eventRepository.findAll(pageable);
     }
 
-    public Page<Event> findMailingWaitingEvents(Pageable pageable) {
-        return eventRepository.findByEventTypeAndStatus(EventType.MAILING, EventStatus.WAITING, pageable);
+    public Page<Event> findMailingWaitingEvents(Pageable pageable, Instant date) {
+        Instant value = date.plus(3, ChronoUnit.HOURS);
+        return eventRepository.findByEventTypeAndStatusAndEventDateAfter(EventType.MAILING, EventStatus.WAITING, value, pageable);
     }
 }

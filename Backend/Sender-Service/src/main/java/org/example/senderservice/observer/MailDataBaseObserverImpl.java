@@ -2,6 +2,7 @@ package org.example.senderservice.observer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.senderservice.event.Event;
 import org.example.senderservice.event.EventService;
 import org.example.senderservice.event.EventStatus;
@@ -15,7 +16,11 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
+import java.util.Date;
+
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class MailDataBaseObserverImpl implements DataBaseObserver {
     private final EventService eventService;
@@ -30,12 +35,15 @@ public class MailDataBaseObserverImpl implements DataBaseObserver {
     public void observe() {
         int pageNumber = 0; // Начинаем с первой страницы
         int pageSize = 100; // Размер страницы (можно настроить)
-
+        log.info("Observing");
         Page<Event> page;
-
+        Instant start = Instant.now();
+        log.info("Time now " + Date.from(start));
         do {
-            page = eventService.findMailingWaitingEvents(PageRequest.of(pageNumber, pageSize));
+            page = eventService.findMailingWaitingEvents(PageRequest.of(pageNumber, pageSize), start);
+            log.info("Found " + page.getTotalElements() + " mailing objects");
             page.getContent().forEach(event -> {
+                log.info("Processing event" + event);
                 event.setStatus(EventStatus.IN_PROGRESS);
                 eventService.save(event);
                 try {
