@@ -137,13 +137,13 @@ services:
     command: tunnel --url http://nginx:8181
 
   ollama:
-    image: ollama/ollama
+    image: ollama/ollama:0.6.4
     container_name: ollama
     volumes:
       - ollama:/root/.ollama  # Corrected volume name
       - ./cfg/ollama/entrypoint.sh:/entrypoint.sh
-    # ports:
-    #   - "11434:11434"
+    ports:
+      - "11434:11434"
     restart: unless-stopped
     deploy:
       resources:
@@ -153,7 +153,7 @@ services:
             capabilities: ["gpu"]
             count: all
     tty: true
-    entrypoint: ["/usr/bin/bash", "/entrypoint.sh"]
+    entrypoint: ["/bin/sh", "entrypoint.sh"]
 
 
   llm-app:
@@ -163,8 +163,8 @@ services:
     environment:
       OLLAMA_API_BASE: http://ollama:11434
       LLM: ollama/llama3.1:8b
-    # ports:
-    #   - "8000:8000"
+    ports:
+      - "8000:8000"
     depends_on:
       - backend_postgres
       - kafka1
