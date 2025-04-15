@@ -3,7 +3,7 @@ ARG BASE_IMAGE=neuml/txtai-cpu
 FROM $BASE_IMAGE
 
 # Copy RAG application
-COPY rag.py requirements.txt .
+COPY . .
 COPY url.lst .
 
 RUN \
@@ -17,4 +17,4 @@ RUN \
     python -m pip install --no-cache-dir -r requirements.txt
 
 # Start streamlit application
-ENTRYPOINT ["python", "rag.py"]
+ENTRYPOINT ["python", "main2.py"]
