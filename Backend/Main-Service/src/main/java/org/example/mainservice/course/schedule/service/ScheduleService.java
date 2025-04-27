@@ -1,5 +1,6 @@
 package org.example.mainservice.course.schedule.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.coyote.BadRequestException;
 import org.example.mainservice.course.schedule.service.internal.Schedule;
 import org.springframework.data.domain.Page;
@@ -10,10 +11,11 @@ import java.util.UUID;
 
 
 public interface ScheduleService {
-    long save(Schedule schedule) throws BadRequestException;
+    long save(Schedule schedule) throws BadRequestException, JsonProcessingException;
     void update(Schedule schedule) throws BadRequestException;
     void delete(Long id);
+    void approve(Long scheduleId, UUID appoverId, Boolean approved) throws JsonProcessingException, BadRequestException;
     Schedule findById(Long id);
     Page<Schedule> getAllSchedules(int page, int size, Sort sort);
-    List<Schedule> getAllFeedbacksByUserId(UUID userId);
+    List<Schedule> getAllScheduleByUserId(UUID userId);
 }

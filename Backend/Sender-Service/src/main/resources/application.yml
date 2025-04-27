@@ -6,7 +6,7 @@ spring:
     name: Sender-Service
 
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${KAFKA_URL:http://localhost:9092}
     topics:
       mailing: mailTopic
     consumer:
@@ -18,18 +18,22 @@ spring:
     username: ${SPRING_DATASOURCE_USERNAME:backend_user}
     password: ${SPRING_DATASOURCE_PASSWORD:backend_password}
 
-    jpa:
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
       hibernate:
-        ddl-auto: none
-      properties:
-        hibernate:
-          dialect: org.hibernate.dialect.PostgreSQLDialect
-          format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
 
 database:
   observer:
     schedule: "0 0/1 * * * *"
 
-email-templates:
-  path: classpath:/templates/*.yml
+io:
+  reflectoring:
+    kafka:
+      bootstrap-servers: ${KAFKA_URL:http://localhost:9092}
+
 

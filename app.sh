@@ -53,7 +53,16 @@ check_main_files() {
 
 echo_cloudflared_url() {
     sleep 5
-    docker logs cloudflare-tunnel
+    # docker logs cloudflare-tunnel
+    docker logs cloudflare-tunnel &> output.txt
+    URL=$(grep -o 'https://[^ ]*trycloudflare.com' output.txt)
+    rm output.txt
+    echo "=========================================================================="
+    echo
+    echo "Main url:    "$URL
+    echo "Swagger url: "$URL"/swagger-ui/index.html"
+    echo
+    echo "=========================================================================="
 }
 
 

@@ -1,5 +1,7 @@
 package org.example.mainservice.course.feedback.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,13 +13,17 @@ import org.example.mainservice.course.promotion.service.internal.Promotion;
 import org.example.mainservice.course.userProfile.service.UserProfileService;
 import org.example.mainservice.course.userProfile.service.internal.UserProfile;
 import org.example.mainservice.exception.ResourceNotFoundException;
+import org.example.mainservice.mail.DelayedSenderService;
+import org.example.mainservice.mail.TemplateType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -29,10 +35,11 @@ public class FeedbackServiceImpl implements FeedbackService {
     private final FeedbackRepository feedbackRepository;
     private final UserProfileService userProfileService;
     private final PromotionService promotionService;
+    private final DelayedSenderService delayedSenderService;
 
 
     @Override
-    public long save(Feedback feedback) throws BadRequestException {
+    public long save(Feedback feedback) throws BadRequestException, JsonProcessingException {
         log.info("Save feedback {}", feedback);
         feedback.setCreatedAt(Instant.now());
         Promotion promotion = promotionService.findById(feedback.getPromotion().getId());
@@ -45,6 +52,15 @@ public class FeedbackServiceImpl implements FeedbackService {
         feedback.setReviewerUserProfile(userReviewerProfile);
         if (userReviewerProfile.equals(userReviewedProfile))
             throw new BadRequestException("Отзыв не может быть дан самому себе!");
+
+        Map<String, String> args = new HashMap<>();
+        args.put("sendTo", feedback.getReviewedUserProfile().getEmail());
+        args.put("name", feedback.getReviewedUserProfile().getFirstName());
+        args.put("reviewerName", feedback.getReviewerUserProfile().getFirstName() + " " + feedback.getReviewerUserProfile().getLastName());
+        args.put("reviewerEmail", feedback.getReviewerUserProfile().getEmail());
+        args.put("reviewText", feedback.getText().substring(0, Math.min(feedback.getText().length() - 1, 100)) + "...");
+
+        delayedSenderService.sendMessage(args, TemplateType.FEEDBACK_CAME);
 
         return feedbackRepository.save(feedback).getId();
     }

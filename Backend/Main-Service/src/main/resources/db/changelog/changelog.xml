@@ -22,9 +22,7 @@
 <!--    EVENTS-->
     <include file="/db/changelog/changeset/create/events/create-event-table.xml"/>
     <include file="/db/changelog/changeset/create/events/mail/create-mail-template-table.xml"/>
-    <include file="/db/changelog/changeset/create/events/mail/create-mail-message-table.xml"/>
 
-<!--    MAIL-->
 
 
 
@@ -41,4 +39,7 @@
 <!--    FEEDBACK-->
     <include file="/db/changelog/changeset/add-some-data/add-to-feedback-table.xml"/>
     <include file="/db/changelog/changeset/add-some-data/add-to-schedule-table.xml"/>
+
+<!--    MAIL-->
+    <include file="/db/changelog/changeset/add-some-data/events/mail/add-to-mail-template-table.xml"/>
 </databaseChangeLog>
