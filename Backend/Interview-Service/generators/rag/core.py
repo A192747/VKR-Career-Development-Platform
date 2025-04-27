@@ -4,7 +4,7 @@ from glob import glob
 import re
 from txtai import Embeddings, LLM, RAG
 from txtai.pipeline import Textractor
-from utils import GraphContext, AutoId
+from generators.rag.utils import GraphContext, AutoId
 from typing import List, Dict, Any
 
 logger = logging.getLogger(__name__)

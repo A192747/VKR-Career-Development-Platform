@@ -50,7 +50,11 @@ _comparator = None
 
 def init():
     global _question_generator
-    model_path = "../ruT5-it-question-generator-sberquad"
+    model_path = "./ruT5-it-question-generator-sberquad"
+    if os.path.isdir(model_path):
+        print(f"Directory {model_path} exists")
+    else:
+        print(f"Directory {model_path} does not exist")
 
     logger.info("QuestionGenerator initialising")
     _question_generator = QuestionGenerator(model_path)

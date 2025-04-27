@@ -7,8 +7,14 @@ class QuestionRequest(BaseModel):
 class ContextRequest(BaseModel):
     topic: str
 
+class Source(BaseModel):
+    id: str
+    text: str
+    url: str
+
 class AnswerResponse(BaseModel):
     answer: str
+    sources: List[Source] # or a custom Source model
 
 class ContextResponse(BaseModel):
     context: List[Dict[str, Any]]
