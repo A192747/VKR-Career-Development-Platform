@@ -10,5 +10,6 @@ __pycache__/
 .vscode/
 .idea/
 .venv/
+venv
 ruT5-it-question-generator-sberquad/model.safetensors
 

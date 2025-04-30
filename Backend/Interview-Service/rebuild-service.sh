@@ -1,7 +1,7 @@
 #!/bin/bash
 
 docker stop docker-llm-app-1
-docker container prune
+docker container prune -f
 docker rmi docker-llm-app
 dir=${PWD}
 cd ../../Docker

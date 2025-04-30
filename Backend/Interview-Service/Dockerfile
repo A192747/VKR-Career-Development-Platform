@@ -1,19 +1,12 @@
-# Set base image
-ARG BASE_IMAGE=neuml/txtai-cpu
+# Use custom base image with dependencies pre-installed
+ARG BASE_IMAGE=rag-base:latest
 FROM $BASE_IMAGE
 
-# Copy RAG application
-COPY . .
+# Copy application code
+COPY . /app
 
-RUN \
-    # Install Java (for Apache Tika)
-    apt-get update && \
-    apt-get -y --no-install-recommends install default-jre-headless && \
-    rm -rf /var/lib/apt/lists && \
-    apt-get -y autoremove && \
-    \
-    # Install base requirements
-    python -m pip install --no-cache-dir -r requirements.txt
+# Set working directory
+WORKDIR /app
 
-# Start streamlit application
+# Start application
 ENTRYPOINT ["python", "main.py"]
