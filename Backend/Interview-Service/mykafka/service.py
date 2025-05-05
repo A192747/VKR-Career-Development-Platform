@@ -11,7 +11,9 @@ class KafkaService:
         try:
             self.producer = KafkaProducer(
                 bootstrap_servers=bootstrap_servers,
-                value_serializer=lambda v: json.dumps(v).encode('utf-8')
+                value_serializer=lambda v: json.dumps(v).encode('utf-8'),
+                retries=3,
+                max_block_ms=5000
             )
             logger.info("KafkaProducer initialized successfully")
         except Exception as e:
@@ -24,7 +26,11 @@ class KafkaService:
                 bootstrap_servers=bootstrap_servers,
                 value_deserializer=lambda x: json.loads(x.decode('utf-8')),
                 auto_offset_reset='earliest',
-                group_id='rag_processor'
+                group_id='rag_processor',
+                max_poll_interval_ms=300000,
+                session_timeout_ms=10000,
+                heartbeat_interval_ms=3000,
+                max_poll_records=100
             )
             logger.info("KafkaConsumer initialized successfully")
         except Exception as e:
@@ -36,7 +42,7 @@ class KafkaService:
     def send_content(self, content_data: Dict[str, Any]):
         try:
             self.producer.send(self.topic, content_data)
-            self.producer.flush()
+            self.producer.flush(timeout=5.0)
             logger.info("Content sent to Kafka")
         except Exception as e:
             logger.error(f"Error sending to Kafka: {e}")
@@ -45,9 +51,14 @@ class KafkaService:
     def consume_content(self):
         logger.info("Starting to consume messages from Kafka")
         try:
-            for message in self.consumer:
-                logger.info(f"Consumed message: {message.value}")
-                yield message.value
+            while True:
+                logger.debug("Polling Kafka consumer")
+                messages = self.consumer.poll(timeout_ms=1000, max_records=100)
+                for tp, msgs in messages.items():
+                    for message in msgs:
+                        logger.info(f"Consumed message: {message.value}")
+                        yield message.value
+                self.consumer.commit()
         except Exception as e:
             logger.error(f"Error consuming Kafka messages: {e}")
             raise
