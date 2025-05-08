@@ -49,7 +49,7 @@ class Application:
         start = self.embeddings.count()
 
         # Add URL content to embeddings index, including URL as metadata
-        sections = self.extract([url])
+        sections = self.extract(url)
         for section in sections:
             section["source_url"] = url
         self.embeddings.upsert(sections)
@@ -59,6 +59,10 @@ class Application:
 
         # Save embeddings, if necessary
         self.persist(self.embeddings)
+
+        # Return extracted content as a single string
+        extracted_content = ' '.join(section.get("text", "") for section in sections if section.get("text"))
+        return extracted_content
 
     def process_urls_from_file(self, filename='url.lst'):
         try:
@@ -185,46 +189,50 @@ class Application:
                     topics[topic] = []
                 topics[topic].append(uid)
 
-    def get_answer(self, question: str) -> Dict[str, Any]:
-        """
-        Processes a question and returns an answer along with source information, including URLs.
-
-        Args:
-            question (str): The question to process.
-
-        Returns:
-            Dict[str, Any]: Dictionary containing the answer and a list of sources with URLs.
-        """
+    def get_answer(self, question: str, context: str) -> Dict[str, Any]:
         logger.info(f"Processing question: {question}")
-        graph = GraphContext(self.embeddings, self.context)
-        question, context = graph(question)
+        sources = []  # Initialize sources to avoid UnboundLocalError
+        if context is None:
+            logger.info(f"Context is empty. Searching in graph context")
+            graph = GraphContext(self.embeddings, self.context)
+            question, context = graph(question)
 
-        logger.info("Forming context")
-        sources = []
-        if context:
-            logger.info(f"Graph context retrieved: {len(context)} items")
-            sources = [
-                {
-                    "id": x["id"],
-                    "text": x["text"],
-                    "source_url": x.get("source_url", "")
-                }
-                for x in context
-            ]
+            logger.info("Forming context")
+            if context:
+                logger.info(f"Graph context retrieved: {len(context)} items")
+                sources = [
+                    {
+                        "id": x["id"],
+                        "text": x["text"],
+                        "source_url": x.get("source_url", "")
+                    }
+                    for x in context
+                ]
+            else:
+                logger.info("Using vector search for context")
+                sources = [
+                    {
+                        "id": x["id"],
+                        "text": x["text"],
+                        "source_url": x.get("source_url", "")
+                    }
+                    for x in self.embeddings.search(question, self.context)
+                ]
+
+            # Extract text for RAG context
+            context_text = [x["text"] for x in sources]
         else:
-            logger.info("Using vector search for context")
+            context_text = [context]
+            # Define a source entry for the provided context
             sources = [
                 {
-                    "id": x["id"],
-                    "text": x["text"],
-                    "source_url": x.get("source_url", "")
+                    "id": "provided_context",
+                    "text": context,
+                    "source_url": ""  # No URL if context is provided directly
                 }
-                for x in self.embeddings.search(question, self.context)
             ]
 
-        # Extract text for RAG context
-        context_text = [x["text"] for x in sources]
-
+        logger.info(f"Context is {context_text}")
         logger.info("Generating response")
         response = self.rag(
             question,

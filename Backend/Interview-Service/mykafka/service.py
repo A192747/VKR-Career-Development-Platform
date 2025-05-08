@@ -1,4 +1,4 @@
-from kafka import KafkaProducer, KafkaConsumer
+from confluent_kafka import Producer, Consumer, KafkaError
 import json
 import logging
 from typing import Dict, Any
@@ -9,29 +9,26 @@ class KafkaService:
     def __init__(self, bootstrap_servers: str = 'kafka1:29092'):
         logger.info(f"Initializing KafkaService with bootstrap_servers={bootstrap_servers}")
         try:
-            self.producer = KafkaProducer(
-                bootstrap_servers=bootstrap_servers,
-                value_serializer=lambda v: json.dumps(v).encode('utf-8'),
-                retries=3,
-                max_block_ms=5000
-            )
+            self.producer = Producer({
+                'bootstrap.servers': bootstrap_servers,
+                'retries': 3,
+                'max.block.ms': 5000
+            })
             logger.info("KafkaProducer initialized successfully")
         except Exception as e:
             logger.error(f"Failed to initialize KafkaProducer: {e}")
             raise
 
         try:
-            self.consumer = KafkaConsumer(
-                'content_processing',
-                bootstrap_servers=bootstrap_servers,
-                value_deserializer=lambda x: json.loads(x.decode('utf-8')),
-                auto_offset_reset='earliest',
-                group_id='rag_processor',
-                max_poll_interval_ms=300000,
-                session_timeout_ms=10000,
-                heartbeat_interval_ms=3000,
-                max_poll_records=100
-            )
+            self.consumer = Consumer({
+                'bootstrap.servers': bootstrap_servers,
+                'group.id': 'rag_processor',
+                'auto.offset.reset': 'earliest',
+                'session.timeout.ms': 60000,
+                'heartbeat.interval.ms': 20000,
+                'max.poll.interval.ms': 900000
+            })
+            self.consumer.subscribe(['content_processing'])
             logger.info("KafkaConsumer initialized successfully")
         except Exception as e:
             logger.error(f"Failed to initialize KafkaConsumer: {e}")
@@ -41,7 +38,7 @@ class KafkaService:
 
     def send_content(self, content_data: Dict[str, Any]):
         try:
-            self.producer.send(self.topic, content_data)
+            self.producer.produce(self.topic, json.dumps(content_data).encode('utf-8'))
             self.producer.flush(timeout=5.0)
             logger.info("Content sent to Kafka")
         except Exception as e:
@@ -52,12 +49,14 @@ class KafkaService:
         logger.info("Starting to consume messages from Kafka")
         try:
             while True:
-                logger.debug("Polling Kafka consumer")
-                messages = self.consumer.poll(timeout_ms=1000, max_records=100)
-                for tp, msgs in messages.items():
-                    for message in msgs:
-                        logger.info(f"Consumed message: {message.value}")
-                        yield message.value
+                msg = self.consumer.poll(timeout=1.0)
+                if msg is None:
+                    continue
+                if msg.error():
+                    logger.error(f"Kafka error: {msg.error()}")
+                    continue
+                logger.info(f"Consumed message: {msg.value().decode('utf-8')}")
+                yield json.loads(msg.value().decode('utf-8'))
                 self.consumer.commit()
         except Exception as e:
             logger.error(f"Error consuming Kafka messages: {e}")
