@@ -67,10 +67,10 @@ services:
     image: confluentinc/cp-kafka:7.3.2
     hostname: kafka1
     container_name: kafka1
-    # ports:
-    #   - "9092:9092"
-    #   - "29092:29092"
-    #   - "9999:9999"
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+      - "9999:9999"
     environment:
       KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka1:19092,EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9092,DOCKER://host.docker.internal:29092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,DOCKER:PLAINTEXT
@@ -97,8 +97,8 @@ services:
       POSTGRES_PASSWORD: backend_password
     volumes:
       - backend_postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+    # ports:
+    #   - "5432:5432"
 
   main-app:
     build:
@@ -126,7 +126,6 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://backend_postgres:5432/backend_db
       SPRING_DATASOURCE_USERNAME: backend_user
       SPRING_DATASOURCE_PASSWORD: backend_password
-      KAFKA_URL: http://kafka1:19092
     depends_on:
       - backend_postgres
       - kafka1
@@ -138,13 +137,13 @@ services:
     command: tunnel --url http://nginx:8181
 
   ollama:
-    image: ollama/ollama:0.5.11
+    image: ollama/ollama:0.6.4
     container_name: ollama
     volumes:
       - ollama:/root/.ollama  # Corrected volume name
       - ./cfg/ollama/entrypoint.sh:/entrypoint.sh
-    # ports:
-    #   - "11434:11434"
+    ports:
+      - "11434:11434"
     restart: unless-stopped
     deploy:
       resources:
@@ -154,23 +153,37 @@ services:
             capabilities: ["gpu"]
             count: all
     tty: true
-    entrypoint: ["/usr/bin/sh", "/entrypoint.sh"]
+    entrypoint: ["/bin/sh", "entrypoint.sh"]
 
 
   llm-app:
     build:
-      context: ../Backend/RAG-LLM-Service
+      context: ../Backend/Interview-Service
       dockerfile: Dockerfile
     environment:
       OLLAMA_API_BASE: http://ollama:11434
       LLM: ollama/llama3.1:8b
-    # ports:
-    #   - "8000:8000"
+    ports:
+      - "8000:8000"
     depends_on:
-      - backend_postgres
+      - llm_postgres
       - kafka1
+
+
+  llm_postgres:
+    image: postgres:15.6
+    container_name: llm_db
+    environment:
+      POSTGRES_DB: llm_db
+      POSTGRES_USER: llm_user
+      POSTGRES_PASSWORD: llm_password
+    volumes:
+      - llm_postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
 
 volumes:
   ollama:
   postgres_data:
   backend_postgres_data:
+  llm_postgres_data:

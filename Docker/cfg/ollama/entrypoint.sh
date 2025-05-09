@@ -14,3 +14,4 @@ echo "🟢 Done!"
 
 # Wait for Ollama process to finish.
 wait $pid
+

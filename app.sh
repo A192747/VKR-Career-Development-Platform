@@ -27,6 +27,7 @@ start_full_project() {
     check_main_files
     docker rmi docker-sender-app
     docker rmi docker-main-app
+    build_dockerbase_for_interview_service
     echo "Starting docker-compose for full project..."
     cd Docker || exit
     $DOCKER_COMPOSE_CMD up -d
@@ -35,10 +36,18 @@ start_full_project() {
 
 start_dev_project() {
     check_main_files
+    build_dockerbase_for_interview_service
     echo "Starting docker-compose for dev project..."
     cd Docker || exit
     cd dev || exit
     $DOCKER_COMPOSE_CMD up -d
+}
+
+build_dockerbase_for_interview_service() {
+    CURR_DIR=${PWD}
+    cd ./Backend/Interview-Service || exit
+    docker build -f Dockerfile.base -t rag-base:latest .
+    cd "$CURR_DIR" || exit
 }
 
 

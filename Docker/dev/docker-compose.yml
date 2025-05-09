@@ -89,7 +89,7 @@ services:
       - "5432:5432"
 
   ollama:
-    image: ollama/ollama:0.5.11
+    image: ollama/ollama:0.6.4
     container_name: ollama
     volumes:
       - ollama:/root/.ollama  # Corrected volume name
@@ -105,9 +105,23 @@ services:
             capabilities: ["gpu"]
             count: all
     tty: true
-    entrypoint: ["/usr/bin/sh", "/entrypoint.sh"]
+    entrypoint: ["/bin/sh", "entrypoint.sh"]
+
+
+  llm_postgres:
+    image: postgres:15.6
+    container_name: llm_db
+    environment:
+      POSTGRES_DB: llm_db
+      POSTGRES_USER: llm_user
+      POSTGRES_PASSWORD: llm_password
+    volumes:
+      - llm_postgres_data:/var/lib/postgresql/data
+    ports:
+    - "5433:5432"
 
 volumes:
   ollama:
   postgres_data:
   backend_postgres_data:
+  llm_postgres_data:

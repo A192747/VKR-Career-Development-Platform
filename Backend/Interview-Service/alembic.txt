@@ -1,0 +1,7 @@
+
+[alembic]
+script_location = migrations
+sqlalchemy.url = postgresql+psycopg2://llm_user:llm_password@llm_postgres:5432/llm_db
+
+[postprocess]
+file = migrations/env.py
