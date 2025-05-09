@@ -27,10 +27,10 @@ class KafkaService:
                 value_deserializer=lambda x: json.loads(x.decode('utf-8')),
                 auto_offset_reset='earliest',
                 group_id='rag_processor',
-                max_poll_interval_ms=300000,
-                session_timeout_ms=10000,
-                heartbeat_interval_ms=3000,
-                max_poll_records=100
+                max_poll_interval_ms=900000,  # 15 minutes
+                session_timeout_ms=60000,     # 60 seconds
+                heartbeat_interval_ms=20000,  # 20 seconds
+                max_poll_records=1            # Process one message at a time
             )
             logger.info("KafkaConsumer initialized successfully")
         except Exception as e:
@@ -53,7 +53,7 @@ class KafkaService:
         try:
             while True:
                 logger.debug("Polling Kafka consumer")
-                messages = self.consumer.poll(timeout_ms=1000, max_records=100)
+                messages = self.consumer.poll(timeout_ms=1000, max_records=1)
                 for tp, msgs in messages.items():
                     for message in msgs:
                         logger.info(f"Consumed message: {message.value}")

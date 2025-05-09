@@ -4,7 +4,7 @@ from api.models import (
     QuestionRequest, ContextRequest, AnswerResponse, ContextResponse,
     CompareRequest, ContentRequest, TestRequest, TestResponse,
     AnswerCheckRequest, AnswerCheckResponse, Topic, Material, Question,
-    Base, TopicCreateRequest, TopicResponse, TopicsListResponse
+    Base, TopicCreateRequest, TopicResponse, TopicsListResponse, QuestionsByTopicsRequest
 )
 from comparator.comparator import AnswerComparator
 from generators.rag.core import get_app
@@ -14,6 +14,7 @@ from sqlalchemy.orm import Session, sessionmaker
 from kafka.admin import KafkaAdminClient, NewTopic
 import logging
 import os
+from typing import List, Optional
 import asyncio
 import uuid
 import math
@@ -41,6 +42,7 @@ except Exception as e:
     raise
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+
 def get_db():
     db = SessionLocal()
     try:
@@ -48,10 +50,12 @@ def get_db():
     finally:
         db.close()
 
+
 _question_generator = None
 _comparator = None
 _kafka_service = None
 _consumer_task = None
+
 
 def init_components():
     global _question_generator, _comparator
@@ -97,6 +101,7 @@ def init_components():
         logger.error(f"Failed to initialize AnswerComparator: {e}")
         raise
 
+
 async def init_kafka():
     global _kafka_service
     logger.info("KafkaService initialising")
@@ -128,6 +133,7 @@ async def init_kafka():
         logger.error(f"Error creating Kafka topic: {e}")
         raise
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Starting application lifespan")
@@ -147,7 +153,9 @@ async def lifespan(app: FastAPI):
             _consumer_task.cancel()
             logger.info("Consumer task cancelled")
 
+
 app.router.lifespan_context = lifespan
+
 
 @app.post("/answer", response_model=AnswerResponse)
 async def answer_question(request: QuestionRequest):
@@ -159,6 +167,7 @@ async def answer_question(request: QuestionRequest):
         logger.error(f"Error processing question: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+
 @app.post("/context", response_model=ContextResponse)
 async def get_topic_context(request: ContextRequest):
     try:
@@ -169,6 +178,7 @@ async def get_topic_context(request: ContextRequest):
         logger.error(f"Error retrieving context: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+
 @app.post("/compare")
 async def compare(request: CompareRequest):
     try:
@@ -178,6 +188,7 @@ async def compare(request: CompareRequest):
     except Exception as e:
         logger.error(f"Error comparing answers: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.post("/process_content")
 async def process_content(request: ContentRequest):
@@ -197,6 +208,7 @@ async def process_content(request: ContentRequest):
         logger.error(f"Error queuing content: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+
 @app.post("/create_test", response_model=TestResponse)
 async def create_test(request: TestRequest, db: Session = Depends(get_db)):
     try:
@@ -209,6 +221,7 @@ async def create_test(request: TestRequest, db: Session = Depends(get_db)):
     except Exception as e:
         logger.error(f"Error creating test: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.post("/check_answer", response_model=AnswerCheckResponse)
 async def check_answer(request: AnswerCheckRequest, db: Session = Depends(get_db)):
@@ -229,6 +242,36 @@ async def check_answer(request: AnswerCheckRequest, db: Session = Depends(get_db
         logger.error(f"Error checking answer: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+
+@app.post("/compare_answer", response_model=AnswerCheckResponse)
+async def compare_answer(request: AnswerCheckRequest, db: Session = Depends(get_db)):
+    try:
+        # Находим вопрос по ID
+        question = db.query(Question).filter(Question.id == request.question_id).first()
+        if not question:
+            raise HTTPException(status_code=404, detail="Question not found")
+
+        # Сравниваем пользовательский ответ с эталонным
+        similarity = _comparator.check_answer_vector(request.user_answer, question.answer_text)
+
+        # Формируем ответ
+        response = AnswerCheckResponse(similarity=similarity)
+
+        # Если сходство меньше 0.6, добавляем информацию о материале
+        if similarity < 0.6:
+            material = db.query(Material).filter(Material.id == question.material_id).first()
+            if material:
+                response.material = {
+                    "content": material.content,
+                    "url": material.url
+                }
+
+        return response
+    except Exception as e:
+        logger.error(f"Error comparing answer: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.post("/topics", response_model=TopicResponse)
 async def create_topic(request: TopicCreateRequest, db: Session = Depends(get_db)):
     try:
@@ -246,6 +289,7 @@ async def create_topic(request: TopicCreateRequest, db: Session = Depends(get_db
         db.rollback()
         logger.error(f"Error creating topic: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.get("/topics", response_model=TopicsListResponse)
 async def get_topics(
@@ -270,6 +314,7 @@ async def get_topics(
         logger.error(f"Error retrieving topics: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+
 @app.get("/health")
 async def health_check():
     try:
@@ -281,6 +326,44 @@ async def health_check():
     except Exception as e:
         logger.error(f"Health check failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/get_questions", response_model=List[dict])
+async def get_questions(request: QuestionsByTopicsRequest, db: Session = Depends(get_db)):
+    try:
+        result = []
+        for topic_id in request.topics:
+            # Проверяем, существует ли тема
+            topic = db.query(Topic).filter(Topic.id == topic_id).first()
+            if not topic:
+                logger.warning(f"Topic ID {topic_id} not found")
+                continue
+
+            # Получаем случайные вопросы для темы
+            questions = (
+                db.query(Question)
+                .filter(Question.topic_id == topic_id)
+                .order_by(func.random())
+                .limit(request.num_questions_per_topic)
+                .all()
+            )
+
+            # Формируем ответ
+            for question in questions:
+                result.append({
+                    "id": question.id,
+                    "question_text": question.question_text,
+                    "topic_id": question.topic_id
+                })
+
+        if not result:
+            raise HTTPException(status_code=404, detail="No questions found for the specified topics")
+
+        return result
+    except Exception as e:
+        logger.error(f"Error retrieving questions: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 def fetch_webpage_content(url):
     logger.info(f"Fetching content from URL: {url}")
@@ -296,6 +379,7 @@ def fetch_webpage_content(url):
     except Exception as e:
         logger.error(f"Error fetching content from {url}: {str(e)}")
         return None
+
 
 def process_kafka_messages_sync(kafka_service):
     logger.info("Starting Kafka consumer loop in thread")
@@ -324,7 +408,8 @@ def process_kafka_messages_sync(kafka_service):
                     db.add(material)
                     db.flush()
                     if processed_content and len(processed_content) > 0:
-                        logger.info(f"Processing content ({len(processed_content)} characters) for embeddings")
+                        logger.info(
+                            f"Processing content ({len(processed_content)} characters) for embeddings from {url or 'provided content'}")
                         start = app_instance.embeddings.count()
                         sections = [{"text": processed_content, "source_url": url}]
                         app_instance.embeddings.upsert(sections)
@@ -335,14 +420,17 @@ def process_kafka_messages_sync(kafka_service):
                         processed_content = app_instance.addurl(url)
                     if not processed_content:
                         logger.warning(f"No content available for question generation from {url or 'message'}")
+                        db.commit()  # Commit material even if no questions are generated
                         continue
                     # Generate questions using processed content
                     logger.info(f"Generating questions for content from {url or 'provided content'}")
+                    questions = []
                     try:
-                        questions = _question_generator.generate_questions(processed_content, num_questions=3)
+                        questions = _question_generator.generate_questions(processed_content, num_questions=1)
                         logger.info(f"Generated {len(questions)} questions: {questions}")
                     except Exception as e:
-                        logger.error(f"Error generating questions: {str(e)}")
+                        logger.error(f"Error generating questions for {url or 'provided content'}: {str(e)}")
+                        db.commit()  # Commit material even if question generation fails
                         continue
                     for topic_id in topic_ids:
                         for question_text in questions:
@@ -371,6 +459,7 @@ def process_kafka_messages_sync(kafka_service):
         finally:
             db.close()
 
+
 async def process_kafka_messages():
     logger.info("Starting async Kafka consumer wrapper")
     loop = asyncio.get_event_loop()
@@ -381,6 +470,7 @@ async def process_kafka_messages():
         await asyncio.sleep(5)
         await process_kafka_messages()
 
+
 async def start_consumer():
     logger.info("Starting Kafka consumer task")
     try:
@@ -389,6 +479,7 @@ async def start_consumer():
         logger.error(f"Kafka consumer task failed: {e}")
         await asyncio.sleep(5)
         await start_consumer()
+
 
 if __name__ == "__main__":
     logger.info("Starting application")

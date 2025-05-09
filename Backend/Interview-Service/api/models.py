@@ -87,3 +87,7 @@ class TopicsListResponse(BaseModel):
     current_page: int
     page_size: int
     total_pages: int
+
+class QuestionsByTopicsRequest(BaseModel):
+    topics: List[int]
+    num_questions_per_topic: int = 3  # По умолчанию 3 вопроса

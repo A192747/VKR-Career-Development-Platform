@@ -9,4 +9,5 @@ pydantic
 alembic
 psycopg2-binary
 kafka-python
+func_timeout
 txtai[graph,pipeline-data,pipeline-llm,torch,transformers]
